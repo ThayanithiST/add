@@ -1,0 +1,17 @@
+const items = document.querySelectorAll('.item');
+
+items.forEach(item => {
+  const quantityInput = item.querySelector('input[type="number"]');
+  const increaseButton = item.querySelector('.increase');
+  const decreaseButton = item.querySelector('.decrease');
+
+  increaseButton.addEventListener('click', () => {
+    quantityInput.value++;
+  });
+
+  decreaseButton.addEventListener('click', () => {
+    if (quantityInput.value > 1) {
+      quantityInput.value--;
+    }
+  });
+});
