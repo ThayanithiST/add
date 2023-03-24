@@ -15,3 +15,11 @@ items.forEach(item => {
     }
   });
 });
+ <div class="item">
+  <h2>Item 1</h2>
+  <div class="quantity">
+    <input type="number" value="1">
+    <button class="increase">+</button>
+    <button class="decrease">-</button>
+  </div>
+</div>
