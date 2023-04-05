@@ -1,0 +1,49 @@
+Connection
+
+package project;
+import java.sql.*;
+
+public class ConnectionProvider {
+    public static Connection getCon() {
+        try {
+            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+            Connection con = DriverManager.getConnection("jdbc:sqlserver://SATHGURU-230403\\SATHGURU;databaseName=thaya;encrypt=true;TrustServerCertificate=true;","thayanithi", "thaya");
+            return con;
+        }
+        catch(Exception e) {
+            System.out.print(e);
+            return null;
+        }
+    }
+}
+
+
+Jsp code
+
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<%@ page import="java.sql.*" %>
+<%@ page import="project.ConnectionProvider" %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<%
+try{
+Connection con = ConnectionProvider.getCon();
+Statement st = con.createStatement();
+ResultSet rs = st.executeQuery("select * from login");
+while (rs.next()) {
+   out.println(rs.getString(1));
+}
+}
+catch(Exception e){
+	System.out.println(e);
+}
+%>
+</body>
+</html>
