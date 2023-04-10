@@ -1,0 +1,126 @@
+Add Students
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<% 
+String msg = request.getParameter("msg");
+if("success".equals(msg)){
+	out.print("Inserted");
+}
+%>
+<form action="addAction.jsp">
+<label>Enter a name</label>
+<input type="text" name="name"><br>
+<input type="submit" name="submit" value="Add">
+</form>
+</body>
+</html>
+
+Add Student Action
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<%@ page import="java.sql.*" %>
+<%@ page import="project.ConnectionProvider" %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<%
+String name=request.getParameter("name");
+try{
+Connection con = ConnectionProvider.getCon();
+Statement st = con.createStatement();
+st.execute("insert into students (name,tamil,english) values('"+name+"',0,0)");
+response.sendRedirect("Addstudent.jsp?msg=success");
+}
+catch(Exception e){
+	out.print(e);
+}
+%>
+</body>
+</html>
+
+
+Add Mark
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<%@ page import="java.sql.*" %>
+<%@ page import="project.ConnectionProvider" %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<%
+String msg = request.getParameter("msg");
+if("success".equals(msg)){
+	out.print("Inserted");
+}
+try{
+Connection con = ConnectionProvider.getCon();
+Statement st = con.createStatement();
+ResultSet rs = st.executeQuery("select * from students");
+while(rs.next()){
+%>
+<form action="StudetnAction.jsp">
+<label for="name"><%=rs.getString("name")%></label>
+<input type="text" name="mark">
+<input type="text" name="id" value="<%= rs.getString("id") %>" /><br>
+
+<% 
+}
+out.print("<input type='submit' value='Add'>");
+}
+catch(Exception e){
+	out.print(e);
+}
+%>
+</form>
+</body>
+</html>  
+
+mark action
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<%@ page import="java.sql.*" %>
+<%@ page import="project.ConnectionProvider" %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<%
+String mark[] = request.getParameterValues("mark");
+String id[] = request.getParameterValues("id");
+try{
+Connection con = ConnectionProvider.getCon();
+Statement st = con.createStatement();
+for(int i = 0; i <id.length; i++){
+	int marks = Integer.parseInt(mark[i]);
+	int ids = Integer.parseInt(id[i]);
+st.executeUpdate("update students set tamil='"+marks+"' where id='"+ids+"' ");
+}
+response.sendRedirect("AddMark.jsp?msg=success");
+}catch(Exception e){
+	out.print(e);
+}
+%>
+</body>
+</html>
