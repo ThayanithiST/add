@@ -191,3 +191,55 @@ items.forEach(item => {
 </script>
 </body>
 </html>
+
+
+Dynamic 
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<% for (int i = 0; i < 4; i++) { %>
+  <select class="form-select form-control" id="fieldList<%= i %>"
+          style="width: 270px" onchange="SelectedField('fieldList<%= i %>', 'inputFields<%= i %>')">
+      <option selected>Select field type</option>
+      <option value="text">Text</option>
+      <option value="number">Number</option>
+      <option value="date">Date</option>
+      <option value="dropdown">Drop down</option>
+      <option value="radio">Radio button</option>
+      <option value="check">Check box</option>
+  </select>
+
+  <div id="inputFields<%= i %>"></div>
+  <div id="values"></div>
+<% } %>
+
+<script type="text/javascript">
+function SelectedField(fieldId, inputId) {
+    var field = document.getElementById(fieldId);
+    var selectedValue = field.options[field.selectedIndex].value;
+    var inputFields = document.getElementById(inputId);
+
+    if (selectedValue === "text" || selectedValue === "number" || selectedValue === "date") {
+        inputFields.innerHTML = '<input type="text" name="field1">';
+    } else {
+        inputFields.innerHTML = '<input type="text" name="field1"> <input type="text" name="field2" id="field2"><button onclick="EnteredValues()">Add</button>';
+    }
+
+}
+function EnteredValues(){
+	var x = document.getElementById("field2").value;
+	let total = parseInt(x);
+	for (let i = 0; i < total; i++) {
+		document.getElementById("values").innerHTML += "<input type='text' name='values' class='form-control' placeholder='Enter a values'>";
+	}
+}
+</script>
+</body>
+</html>
