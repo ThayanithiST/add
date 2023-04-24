@@ -1,0 +1,304 @@
+<%@ page language="java" contentType="text/html;
+charset=ISO-8859-1"
+	pageEncoding="ISO-8859-1"%>
+<%@ page import="java.sql.*" %>
+<%@ page import="project.ConnectionProvider" %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/c
+ss/bootstrap.min.css">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jq
+uery.min.js"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js
+/bootstrap.min.js"></script>
+<link
+	href="https://fonts.googleapis.com/css2?
+family=Alkatra:wght@400;500;600&family=Libre+Baskervill
+e:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,40
+0;0,500;0,600;1,400;1,700&display=swap"
+	rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/fontawesome/4.7.0/css/font-awesome.min.css">
+<title>Admin Home</title>
+<style type="text/css">
+body {
+	background-color: #f2f2f2;
+}
+
+nav {
+	margin: 0 !important;
+	background-color: #f28c38;
+	border-radius: 0 !important;
+}
+
+nav .heading a {
+	color: white;
+	font-weight: 700;
+}
+
+.heading button {
+	border: none;
+	outline: none;
+	background: transparent;
+}
+
+.main-content-container {
+	display: flex;
+	height: 100%;
+}
+
+aside {
+	margin-top: 0;
+	background-color: #999999;
+	top: 0;
+	left: 0;
+	min-width: 180px;
+	max-width: 180px;
+	min-height: 100vh;
+}
+
+#openSidebar {
+	display: none;
+}
+
+aside ul {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	font-size: 13px;
+}
+
+aside ul li {
+	margin: 5px 6px;
+	padding: 13px 25px;
+	font-weight: 500;
+}
+
+aside ul li:hover {
+	background-color: #ffffffad;
+}
+
+aside ul li a {
+	text-decoration: none !important;
+	color: #000C66;
+}
+
+section {
+	width: 100%;
+}
+
+section h3 {
+	color: #333333d1;
+	margin-left: 8px;
+	margin-bottom: 10px;
+}
+.fieldFormContainer span {
+	color: red;
+}
+.FieldsContainer{
+display: flex;
+flex-wrap: wrap;
+gap: 20px;
+}
+</style>
+</head>
+<body>
+	<div class="full-content-container">
+		<!------------------- Nav Bar start ----------------->
+		<nav class="navbar navbar-expand-sm sticky-top">
+			<div class="container-fluid">
+				<div class="navbar-header heading">
+					<button class="navbar-brand" id="openSidebar"
+						onclick="sidebar_open()">
+						<i class="fa fa-reorder" style="font-size: 20px"></i>
+					</button>
+					<button class="navbar-brand" id="closeSidebar"
+						onclick="sidebar_close()">
+						<i class="fa fa-reorder" style="font-size: 20px"></i>
+					</button>
+					<a class="navbar-brand" href="#" style="font-size: 23px">Forms</a>
+				</div>
+				<div>
+					<ul class="nav navbar-nav navbar-right">
+						<li><a href="#"><span class="glyphicon glyphicon-log-in">
+							</span> Logout</a></li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+		<!------------------- Nav Bar end ----------------->
+		<!------------------- Side Bar start----------------->
+		<div class="main-content-container">
+			<aside id="sidebar_container">
+				<div class="sidebar-header"></div>
+				<ul class="list-unstyled mt-0" role="menu" style="font-size: 14px;">
+					<li><a href="" style="font-weight: 600;">Create Form</a></li>
+					<li><a href="" style="font-weight: 600;">Add Users</a></li>
+					<li><a href="" style="font-weight: 600;">Results</a></li>
+				</ul>
+			</aside>
+			<!----------------- Side Bar end----------------->
+			<section>
+				<h3>Create Form</h3>
+				<form action="createForm.jsp" method="post"
+					class="container fieldFormContainer">
+					<div class="input-group" style="margin-bottom: 10px">
+						<label for="title" class="form-label">Form Title<span>
+								*</span></label> <input type="text" name="title" class="form-control">
+					</div>
+					<div class="input-group" style="margin-bottom: 10px">
+						<label for="description" class="formlabel">Description<span>
+								*</span></label>
+						<textarea name="description" class="form-control">
+</textarea>
+					</div>
+					<div class="input-group" style="margin-bottom: 10px">
+						<label for="totalFields" class="col-form-label">Total
+							Field<span> *</span>
+						</label> <input type="number" name="totalFields" class="form-control">
+					</div>
+					<div class="form-group">
+						<div class="col-sm-3 controls text-center">
+							<input type="submit" name="add" value="Create"
+								class="btn btn-info" style="margin-bottom: 10px">
+						</div>
+					</div>
+				</form>
+				<%
+				if (request.getParameter("add") != null) {
+					String title = request.getParameter("title");
+					String description = request.getParameter("description");
+					int totalField = Integer.parseInt(request.getParameter("totalFields"));
+					int id = 0;
+					%>
+					<%try{
+						Connection con = ConnectionProvider.getCon();
+						Statement st = con.createStatement();
+						st.execute("insert into form (title,description) values('"+title+"','"+description+"')");
+						Statement st2 = con.createStatement();
+						ResultSet rs = st2.executeQuery("select * from form");
+						while(rs.next()){
+						String idValue = rs.getString("formId");
+						id = Integer.parseInt(idValue);
+						}
+						session.setAttribute("id",id);
+						}
+						catch(Exception e){
+							out.print(e);
+						}
+				%>
+				<form method="post" action="createFormAction.jsp">
+				<% for (int i = 0; i < totalField; i++) { %>
+				<div class="container FieldsContainer" style="margin-bottom: 30px;">
+  <input type="text" name="fieldText" style="width:220px;" class="form-control" placeholder="Enter a text or question" required>
+  <select class="form-select form-control" name="fieldType" id="fieldList<%= i %>" style="width: 220px" onchange="SelectedField('fieldList<%= i %>', 'inputFields<%= i %>')">
+      <option selected>Select field type</option>
+      <option value="text">Text</option>
+      <option value="number">Number</option>
+      <option value="date">Date</option>
+      <option value="dropdown">Drop down</option>
+      <option value="radio">Radio button</option>
+      <option value="check">Check box</option>
+  </select>
+
+  <div id="inputFields<%= i %>" class="inputs"></div>
+  </div>
+<% } %>
+<input type="submit" name="submit" value="submit" class="btn btn-primary">
+<script type="text/javascript">
+  function SelectedField(fieldId, inputId) {
+    var field = document.getElementById(fieldId);
+    var selectedValue = field.options[field.selectedIndex].value;
+    var inputFields = document.getElementById(inputId);
+
+    if (selectedValue === "text" || selectedValue === "number" || selectedValue === "date") {
+      inputFields.innerHTML = null;
+    } else {
+      inputFields.innerHTML = '<div class="input-container"><div style="display:flex;gap: 30px;"><input type="text" name="value" class="form-control" style="width:220px;"><button class="add-button btn btn-success" onclick="EnteredValues(this)">Add</button></div></div>';
+    }
+
+  }
+
+  function EnteredValues(button) {
+    var inputContainer = button.parentNode;
+    var inputFields = inputContainer.parentNode;
+    if (inputFields.children.length <= 10) { 
+      var txtNewInputBox = document.createElement('div');
+      txtNewInputBox.innerHTML = "<div class='input-container'><input type='text' name='value' class='form-control' style='width:220px;'></div>";
+      inputFields.appendChild(txtNewInputBox);
+    }
+  }
+</script></form>
+				<%}
+				out.print(session.getAttribute("id"));
+				%>
+			</section>
+		</div>
+	</div>
+	<!-------- Javascript for Side bar menu ------->
+	<script type="text/javascript">
+		function sidebar_open() {
+			var openMenu = document.getElementById("openSidebar");
+			var closeMenu = document.getElementById("closeSidebar");
+			var sidebar = document.getElementById("sidebar_container");
+			sidebar.style.display = "block";
+			openMenu.style.display = "none";
+			closeMenu.style.display = "block";
+		}
+		function sidebar_close() {
+			var openMenu = document.getElementById("openSidebar");
+			var closeMenu = document.getElementById("closeSidebar");
+			var sidebar = document.getElementById("sidebar_container");
+			closeMenu.style.display = "none";
+			openMenu.style.display = "block";
+			sidebar.style.display = "none";
+		}
+	</script>
+</body>
+</html>
+
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<%@ page import="java.sql.*" %>
+<%@ page import="project.ConnectionProvider" %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<%
+String fieldText[] = request.getParameterValues("fieldText");
+String fieldType[] = request.getParameterValues("fieldType");
+String ID = session.getAttribute("id").toString();
+int id = Integer.parseInt(ID);
+for (String str : fieldText)   
+{  
+out.println(str);  
+} 
+for (String str2 : fieldType)   
+{  
+out.println(str2);  
+}
+try{
+	Connection con = ConnectionProvider.getCon();
+	Statement st = con.createStatement();
+	for(int i = 0; i<fieldText.length; i++){
+		st.execute("insert into field (formId,fieldText,fieldType) values('"+id+"','"+fieldText[i]+"','"+fieldType[i]+"')");
+	}
+
+
+	}
+	catch(Exception e){
+		out.print(e);
+	}
+%>
+</body>
+</html>
