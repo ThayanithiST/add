@@ -47,3 +47,75 @@ catch(Exception e){
 %>
 </body>
 </html>
+<form action="ahome.jsp" method="post" class="container fieldFormContainer">
+  <div class="input-group" style="margin-bottom: 10px">
+    <label for="title" class="form-label">Form Title<span> *</span></label>
+    <input type="text" name="title" class="form-control" required>
+  </div>
+
+  <div class="input-group" style="margin-bottom: 10px">
+    <label for="description" class="formlabel">Description<span> *</span></label>
+    <textarea name="description" class="form-control" required></textarea>
+  </div>
+
+  <div class="input-group" style="margin-bottom: 10px">
+    <label for="totalFields" class="col-form-label">Total Field<span> *</span></label>
+    <input type="number" name="totalFields" id="total" class="form-control" onblur="createFields()" required>
+  </div>
+
+  <div id="dynamicFields"></div>
+
+  <div class="input-group" style="margin-bottom: 10px">
+    <label for="Active" class="col-form-label" style="width:200px;">Active<span> *</span></label>
+    <select name="active" class="form-control" style="margin-bottom: 10px">
+      <option value="">Select Yes or No</option>
+      <option value="1">Yes</option>
+      <option value="0">No</option>
+    </select>
+  </div>
+</form>
+
+<script>
+function createFields() {
+  const totalFields = document.getElementById("total").value;
+  const dynamicFieldsDiv = document.getElementById("dynamicFields");
+
+  // clear any existing fields
+  dynamicFieldsDiv.innerHTML = "";
+
+  // create two text fields and one select field for each total field
+  for (let i = 1; i <= totalFields; i++) {
+    // create text field 1
+    const textField1 = document.createElement("input");
+    textField1.type = "text";
+    textField1.name = "textField" + i + "a";
+    textField1.placeholder = "Field " + i + "a";
+    dynamicFieldsDiv.appendChild(textField1);
+
+    // create text field 2
+    const textField2 = document.createElement("input");
+    textField2.type = "text";
+    textField2.name = "textField" + i + "b";
+    textField2.placeholder = "Field " + i + "b";
+    dynamicFieldsDiv.appendChild(textField2);
+
+    // create select field
+    const selectField = document.createElement("select");
+    selectField.name = "selectField" + i;
+    dynamicFieldsDiv.appendChild(selectField);
+
+    // create two options for the select field
+    const option1 = document.createElement("option");
+    option1.value = "";
+    option1.text = "Select an option";
+    selectField.add(option1);
+
+    const option2 = document.createElement("option");
+    option2.value = "option1";
+    option2.text = "Option 1";
+    selectField.add(option2);
+  }
+}
+</script>
+
+
