@@ -462,3 +462,83 @@ try{
 %>
 </body>
 </html>
+<script type="text/javascript">
+let fieldId = 0;
+const element = document.getElementById("form-container");
+const total = document.getElementById("total").value;
+
+for (let i = 0; i < total; i++) {
+  fieldId++;
+
+  const inputContainer = document.createElement("div");
+
+  const textField = document.createElement("input");
+  textField.type = "text";
+  textField.value = fieldId;
+  element.appendChild(textField);
+
+  const textField2 = document.createElement("input");
+  textField2.type = "text";
+  element.appendChild(textField2);
+
+  inputContainer.innerHTML =
+    '<select class="form-select form-control" name="fieldType" id="fieldList' +
+    i +
+    '" style="width: 220px" onchange=\'SelectedField("fieldList' +
+    i +
+    '", "inputFields' +
+    i +
+    '", "' +
+    fieldId +
+    '")\' required> <option value="">Select field type</option> <option value="text">Text</option> <option value="number">Number</option> <option value="date">Date</option> <option value="dropdown">Drop down</option> <option value="radio">Radio button</option> <option value="check">Check box</option> </select>';
+  element.appendChild(inputContainer);
+
+  const inputFields = document.createElement("div");
+  inputFields.id = "inputFields" + i;
+  inputFields.className = "inputs";
+  element.appendChild(inputFields);
+}
+
+function SelectedField(fieldId, inputId, fid) {
+  const field = document.getElementById(fieldId);
+  const selectedValue = field.options[field.selectedIndex].value;
+  const inputFields = document.getElementById(inputId);
+
+  if (selectedValue === "text" || selectedValue === "number" || selectedValue === "date") {
+    inputFields.innerHTML = "";
+  } else {
+    inputFields.innerHTML =
+      '<div class="input-container"><div style="display:flex;gap: 15px;"><input type="text" name="fieldId" value="' +
+      fid +
+      '"><input type="text" name="value" class="form-control" style="width:220px;" required><input type="button" class="add-button btn btn-success" onclick="EnteredValues(this, ' +
+      fid +
+      ')" value="Add"></div></div>';
+  }
+}
+
+function EnteredValues(button, fid) {
+  const inputContainer = button.parentNode;
+  const inputFields = inputContainer.parentNode;
+
+  if (inputFields.children.length <= 10) {
+    const txtNewInputBox = document.createElement("div");
+    txtNewInputBox.innerHTML =
+      '<div class="input-container"><input type="text" name="fieldId" value="' +
+      fid +
+      '"><input type="text" name="value" class="form-control" style="width:220px;" required></div>';
+    inputFields.appendChild(txtNewInputBox);
+  }
+}
+</script>
+
+<div class="form-group">
+  <div class="col-sm-8 controls text-center">
+    <input type="submit" name="submit" value="submit" class="btn btn-primary sbt-button">
+  </div>
+</div>
+
+<div id="form-container"></div>
+
+<input type="hidden" id="total" value="10">
+
+
