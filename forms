@@ -542,3 +542,38 @@ function EnteredValues(button, fid) {
 <input type="hidden" id="total" value="10">
 
 
+
+
+
+<tr>
+  <td><label><%= rs2.getString("fieldText") %></label></td>
+  <td>
+    <%
+    Statement selectCheck = con.createStatement();
+    ResultSet rs5 = selectCheck.executeQuery("SELECT * FROM Field_value WHERE fieldId='" + fieldId + "' ");
+    while (rs5.next()) {
+      String value = rs5.getString("value");
+    %>
+      <input type="checkbox" name="getCheckValue" id="field<%= fid %>" class="form-check-input" value="<%= value %>" onchange="SelectedValue('div<%= i %>','field<%= fid %>')">
+      <label class="form-check-label"><%= value %></label><br>
+    <%
+    }
+    %>
+    <div id="div<%= i %>"></div>
+  </td>
+</tr>
+
+<script>
+function SelectedValue(div, field) {
+  var getDiv = document.getElementById(div);
+  var checkbox = document.getElementById(field);
+
+  if (checkbox.checked) {
+    var selectedValue = checkbox.value;
+    getDiv.innerHTML = "<input type='text' name='value' value='" + selectedValue + "'>";
+  } else {
+    getDiv.innerHTML = "";
+  }
+}
+</script>
+
