@@ -577,3 +577,41 @@ function SelectedValue(div, field) {
 }
 </script>
 
+
+
+<tr>
+  <td><label><%= rs2.getString("fieldText") %></label></td>
+  <td>
+    <%
+    Statement selectCheck = con.createStatement();
+    ResultSet rs5 = selectCheck.executeQuery("SELECT * FROM Field_value WHERE fieldId='" + fieldId + "' ");
+    while (rs5.next()) {
+      String value = rs5.getString("value");
+    %>
+      <input type="checkbox" name="getCheckValue" id="field<%= fid %>" class="form-check-input" value="<%= value %>" onchange="collectSelectedValues()">
+      <label class="form-check-label"><%= value %></label><br>
+    <%
+    }
+    %>
+    <div id="selectedValues"></div>
+  </td>
+</tr>
+
+<script>
+function collectSelectedValues() {
+  var checkboxes = document.getElementsByName("getCheckValue");
+  var selectedValues = [];
+
+  for (var i = 0; i < checkboxes.length; i++) {
+    if (checkboxes[i].checked) {
+      selectedValues.push(checkboxes[i].value);
+    }
+  }
+
+  var selectedValuesDiv = document.getElementById("selectedValues");
+  selectedValuesDiv.innerHTML = "Selected Values: " + selectedValues.join(", ");
+}
+</script>
+
+
+
