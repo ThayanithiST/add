@@ -1,0 +1,287 @@
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<%@ page import="project.ConnectionProvider"%>
+<%@ page import="java.sql.*"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<script src="https://kit.fontawesome.com/e61d547b58.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="style.css">
+<title>Admin Home</title>
+</head>
+<body>
+	<div class="full-content-container">
+
+		<!------------------- Nav Bar start ----------------->
+
+		<nav class="navbar navbar-expand-sm sticky-top">
+			<div class="container-fluid">
+				<div class="navbar-header heading">
+					<button class="navbar-brand" id="openSidebar"
+						onclick="sidebar_open()">
+						<i class="fa-solid fa-bars"></i>
+					</button>
+					<button class="navbar-brand" id="closeSidebar"
+						onclick="sidebar_close()">
+						<i class="fa-solid fa-bars"></i>
+					</button>
+					<a class="navbar-brand" href="#" style="font-size: 23px">Forms</a>
+				</div>
+				<div>
+
+					<ul class="nav navbar-nav navbar-right">
+						<li><a href="../Logout.jsp"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
+					</ul>
+
+				</div>
+			</div>
+		</nav>
+
+		<!------------------- Nav Bar end ----------------->
+
+		<!------------------- Side Bar start----------------->
+
+		<div class="main-content-container">
+			<aside id="sidebar_container">
+				<div class="sidebar-header"></div>
+				
+				<ul class="list-unstyled mt-0" role="menu" style="font-size: 14px;">
+					<li><a href="ahome.jsp" style="font-weight: 600;">Create Form</a></li>
+					<li><a href="AddUser.jsp" style="font-weight: 600;">Add Users</a></li>
+					<li><a href="Result.jsp" style="font-weight: 600;">Results</a></li>
+				</ul>
+
+			</aside>
+
+			<!----------------- Side Bar end----------------->
+
+			<section>
+			
+			<!------------------ Create Form Start ------------------->
+			
+			<%
+					int formId = 0;
+					try {
+						Connection con = ConnectionProvider.getCon();
+						
+						Statement st = con.createStatement();
+						ResultSet rs = st.executeQuery("SELECT * FROM form ORDER BY formId ASC");
+						while (rs.next()) {
+							String formValue = rs.getString("formId");
+							formId = Integer.parseInt(formValue);
+						}
+						formId = formId + 1;
+					}
+					catch (Exception e) {
+						out.print(e);
+					}
+					%>
+			
+				<h3>Create Form</h3>
+				<form action="createFormAction.jsp" method="post" class="container fieldFormContainer">
+				
+				<input type="hidden" name ="formId" value="<%=formId %>">
+				
+					<div class="input-group" style="margin-bottom: 10px">
+						<label for="title" class="form-label">Form Title<span> *</span></label> 
+						<input type="text" name="title" class="form-control" required>
+					</div>
+
+					<div class="input-group" style="margin-bottom: 10px">
+						<label for="description" class="formlabel">Description<span> *</span></label>
+						<textarea name="description" class="form-control" required></textarea>
+					</div>
+
+<div class="input-group" style="margin-bottom: 10px">
+  <label for="totalFields" class="col-form-label">Total Field<span> *</span></label>
+  <input type="number" id="total" name="totalFields" class="form-control" oninput="getTotal()" required>
+</div>
+
+<div class="input-group" style="margin-bottom: 10px">
+  <label for="Active" class="col-form-label" style="width:130px;">Active<span> *</span></label>
+  <select name="active" class="form-control" style="margin-bottom: 10px;" required>
+    <option value="">Select Yes or No</option>
+    <option value="1">Yes</option>
+    <option value="0">No</option>
+  </select>
+</div>
+<%
+    int fid = 0;
+    try {
+        Connection con = ConnectionProvider.getCon();
+        
+        Statement st3 = con.createStatement();
+        ResultSet fieldRs = st3.executeQuery("SELECT * FROM field ORDER BY fieldId ASC");
+        while (fieldRs.next()) {
+            String fieldidValue = fieldRs.getString("fieldId");
+            fid = Integer.parseInt(fieldidValue);
+        }
+        session.setAttribute("fid", fid);
+    }
+    catch (Exception e) {
+        out.print(e);
+    }
+    %>
+    <%
+    int field = 0;
+    String ID = session.getAttribute("fid").toString();
+    int fieldId = Integer.parseInt(ID);
+    %>
+   <input type="text" id="fieldId" value="<%= fieldId %>">
+
+<!------------------ Create Form End ------------------->
+
+<!------------------- Create Field Elements Start------------------>
+<div class="container FieldsContainer" id="FieldsContainer" style="margin-bottom: 30px;"></div>
+<script type="text/javascript">
+  function getTotal() {
+    const totalField = parseInt(document.getElementById("total").value);
+    const fieldContainer = document.getElementById("FieldsContainer");
+    const currentFieldCount = fieldContainer.childElementCount;
+
+    if (totalField < currentFieldCount) {
+      // Remove extra fields
+      while (totalField < fieldContainer.childElementCount) {
+        fieldContainer.removeChild(fieldContainer.lastChild);
+      }
+    } else if (totalField > currentFieldCount) {
+      // Add new fields
+      for (let i = currentFieldCount; i < totalField; i++) {
+    	  const fieldContainer = document.getElementById("FieldsContainer");
+    	    const currentFieldCount = fieldContainer.childElementCount;
+        let fieldId;
+        if (currentFieldCount === 0) {
+          fieldId = parseInt(document.getElementById("fieldId").value) + 1;
+          console.log("if");
+        } else {
+          let lastChild = fieldContainer.lastElementChild;
+          let lastFieldId = parseInt(lastChild.querySelector('input[name="id"]').value);
+          fieldId = lastFieldId + 1;
+          console.log("else");
+        }
+
+        const fieldContainerDiv = document.createElement("div");
+        fieldContainerDiv.className = "field-container";
+
+        const textField = document.createElement("input");
+        textField.type = "text";
+        textField.name = "id";
+        textField.value = fieldId;
+        fieldContainerDiv.appendChild(textField);
+
+        const textField2 = document.createElement("input");
+        textField2.type = "text";
+        textField2.name = "fieldText";
+        textField2.placeholder = "Enter Text or question";
+        textField2.className = "form-control";
+        textField2.style = "width: 230px;";
+        textField2.required = true;
+        fieldContainerDiv.appendChild(textField2);
+
+        const inputContainer = document.createElement("div");
+        inputContainer.innerHTML =
+          '<select class="form-select form-control" name="fieldType" id="fieldList' +
+          i +
+          '" style="width: 220px" onchange="selectedField(\'fieldList' +
+          i +
+          '\', \'inputFields' +
+          i +
+          '\', \'' +
+          fieldId +
+          '\')" required> <option value="">Select field type</option> <option value="text">Text</option> <option value="number">Number</option> <option value="date">Date</option> <option value="dropdown">Drop down</option> <option value="radio">Radio button</option> <option value="check">Check box</option> </select>';
+        fieldContainerDiv.appendChild(inputContainer);
+
+        const inputFields = document.createElement("div");
+        inputFields.id = "inputFields" + i;
+        inputFields.className = "inputs";
+        fieldContainerDiv.appendChild(inputFields);
+
+        fieldContainer.appendChild(fieldContainerDiv);
+      }
+    }
+  }
+</script>        
+			
+					<div class="form-group">
+						<div class="col-sm-8 controls text-center">
+							<input type="submit" name="submit" value="Submit"  class="btn btn-primary sbt-button">
+						</div>
+					</div>
+					
+					<script type="text/javascript">
+						function selectedField(fieldId, inputId, fid) {
+							var field = document.getElementById(fieldId);
+							var selectedValue = field.options[field.selectedIndex].value;
+							var inputFields = document.getElementById(inputId);
+
+							if (selectedValue === "text" || selectedValue === "number" || selectedValue === "date") {
+								inputFields.innerHTML = null;
+							} else {
+								inputFields.innerHTML = '<div class="input-container"><div style="display:flex;gap: 15px;"><input type="text" name="fieldId" value="' + fid + '"><input type="text" name="value" class="form-control" style="width:220px;" required><input type="button" class="add-button btn btn-success" onclick="EnteredValues(this, '
+										+ fid + ')" value="Add"></div></div>';
+							}
+						}
+
+						function EnteredValues(button, fid) {
+							var inputContainer = button.parentNode;
+							var inputFields = inputContainer.parentNode;
+
+							if (inputFields.children.length <= 10) {
+								var txtNewInputBox = document.createElement('div');
+								txtNewInputBox.innerHTML = "<div class='input-container'><input type='text' name='fieldId' value='" + fid + "'><input type='text' name='value' class='form-control' style='width:220px;'required></div>";
+								inputFields.appendChild(txtNewInputBox);
+							}
+						}
+					</script>
+					
+				</form>
+
+
+			</section>
+
+		</div>
+
+	</div>
+
+	<!-------- Javascript for Side bar menu ------->
+
+	<script type="text/javascript">
+		function sidebar_open() {
+
+			var openMenu = document.getElementById("openSidebar");
+
+			var closeMenu = document.getElementById("closeSidebar");
+
+			var sidebar = document.getElementById("sidebar_container");
+
+			sidebar.style.display = "block";
+
+			openMenu.style.display = "none";
+
+			closeMenu.style.display = "block";
+
+		}
+
+		function sidebar_close() {
+
+			var openMenu = document.getElementById("openSidebar");
+
+			var closeMenu = document.getElementById("closeSidebar");
+
+			var sidebar = document.getElementById("sidebar_container");
+
+			closeMenu.style.display = "none";
+
+			openMenu.style.display = "block";
+
+			sidebar.style.display = "none";
+
+		}
+	</script>
+
+</body>
+</html>
