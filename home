@@ -285,3 +285,100 @@
 
 </body>
 </html>
+
+
+<div class="FieldsContainer" id="FieldsContainer" style="margin-bottom: 30px;">
+  <div>
+    <input type="text" name="id" value="<%= fieldId%>">
+    <input type="text" name="fieldText" placeholder="Enter a text or question" class="form-control" style="width: 250px;border:1px solid #43A6C6" required>
+    <select class="form-select form-control" name="fieldType" id="fieldList<%= i %>" style="width: 250px;border:1px solid #43A6C6" onchange="selectedField('fieldList<%= i %>', 'inputFields<%= i %>', '<%= fieldId %>')" required>
+      <option value="">Select field type</option>
+      <option value="text">Text</option>
+      <option value="number">Number</option>
+      <option value="date">Date</option>
+      <option value="dropdown">Drop down</option>
+      <option value="radio">Radio button</option>
+      <option value="check">Check box</option>
+    </select>
+    <button type="button" class="FieldsAdd" id="FieldsAdd" onclick="AddFields()"><i class="fa-solid fa-plus"></i></button>
+    <div id="inputFields" class="inputs"></div>
+  </div>
+</div>
+
+<div class="form-group">
+  <div class="text-center">
+    <input type="submit" name="submit" value="Submit" style="background-color: black; color: white;" class="btn sbt-button">
+  </div>
+</div>
+
+<script type="text/javascript">
+  var FieldsContainer = document.getElementById("FieldsContainer");
+  let fieldId = <%= fieldId %>;
+  let i = 1;
+
+  function AddFields() {
+    i++;
+    fieldId++;
+
+    const fieldContainerDiv = document.createElement("div");
+
+    const textField = document.createElement("input");
+    textField.type = "text";
+    textField.name = "id";
+    textField.value = fieldId;
+    fieldContainerDiv.appendChild(textField);
+
+    const textField2 = document.createElement("input");
+    textField2.type = "text";
+    textField2.name = "fieldText";
+    fieldContainerDiv.appendChild(textField2);
+
+    const inputContainer = document.createElement("div");
+    inputContainer.innerHTML = '<select class="form-select form-control" name="fieldType" id="fieldList' + i + '" style="width: 250px;border:1px solid #43A6C6" onchange="selectedField(\'fieldList' + i + '\', \'
+inputFields' + i + '\', \'' + fieldId + '\')" required>
+  <option value="">Select field type</option>
+  <option value="text">Text</option>
+  <option value="number">Number</option>
+  <option value="date">Date</option>
+  <option value="dropdown">Drop down</option>
+  <option value="radio">Radio button</option>
+  <option value="check">Check box</option>
+</select>';
+
+    fieldContainerDiv.appendChild(inputContainer);
+
+    const buttonDiv = document.createElement("div");
+    buttonDiv.innerHTML = '<button type="button" class="FieldsAdd" id="FieldsAdd" onclick="AddFields()"><i class="fa-solid fa-plus"></i></button>';
+    fieldContainerDiv.appendChild(buttonDiv);
+
+    const inputFields = document.createElement("div");
+    inputFields.id = "inputFields" + i;
+    inputFields.className = "inputs";
+    fieldContainerDiv.appendChild(inputFields);
+
+    document.getElementById("FieldsContainer").appendChild(fieldContainerDiv);
+  }
+
+  function selectedField(fieldId, inputId, fid) {
+    var field = document.getElementById(fieldId);
+    var selectedValue = field.options[field.selectedIndex].value;
+    var inputFields = document.getElementById(inputId);
+
+    if (selectedValue === "text" || selectedValue === "number" || selectedValue === "date") {
+      inputFields.innerHTML = "";
+    } else {
+      inputFields.innerHTML = '<div class="input-container"><div style="display:flex;gap: 15px;"><input type="hidden" name="fieldId" value="' + fid + '"><input type="text" name="value" class="form-control" style="width:250px;border:1px solid #43A6C6" required><input type="button" class="add-button btn btn-success" onclick="EnteredValues(this, ' + fid + ')" value="Add"></div></div>';
+    }
+  }
+
+  function EnteredValues(button, fid) {
+    var inputContainer = button.parentNode;
+    var inputFields = inputContainer.parentNode;
+
+    if (inputFields.children.length <= 10) {
+      var txtNewInputBox = document.createElement('div');
+      txtNewInputBox.innerHTML = "<div class='input-container'><input type='hidden' name='fieldId' value='" + fid + "'><input type='text' name='value' class='form-control' style='width:250px;border:1px solid #43A6C6' required></div>";
+      inputFields.appendChild(txtNewInputBox);
+    }
+  }
+</script>
