@@ -1,0 +1,808 @@
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+
+pageEncoding="ISO-8859-1"%>
+
+<%@ page import="project.ConnectionProvider"%>
+
+<%@ page import="java.sql.*"%>
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="ISO-8859-1">
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+<script src="https://kit.fontawesome.com/e61d547b58.js" crossorigin="anonymous"></script>
+
+<link rel="stylesheet" href="../css/style.css">
+
+<script src="../js/sidebar.js"></script>
+
+<title>Admin Home</title>
+
+<style type="text/css">
+body {
+	background-color: #f2f2f2;
+}
+
+nav {
+	margin: 0 !important;
+	background-color: #f28c38;
+	border-radius: 0 !important;
+}
+
+nav .heading a {
+	color: white;
+	font-weight: 700;
+}
+nav .heading a:hover{
+	color: blue;
+}
+
+.heading button {
+	border: none;
+	outline: none;
+	background: transparent;
+}
+nav ul li a{
+	color: white !important;
+}
+nav ul li a:hover{
+	color: black !important;
+	background: none !important;
+}
+.main-content-container {
+	display: flex;
+	height: 100%;
+}
+
+aside {
+	margin-top: 0;
+	background-color: #999999;
+	top: 0;
+	left: 0;
+	min-width: 180px;
+	max-width: 180px;
+	min-height: 100vh;
+}
+
+#openSidebar {
+	display: none;
+}
+
+aside ul {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	font-size: 13px;
+}
+
+aside ul li {
+	margin: 5px 6px;
+	padding: 13px 25px;
+	font-weight: 500;
+}
+
+aside ul li:hover {
+	background-color: #ffffffad;
+}
+
+aside ul li a {
+	text-decoration: none !important;
+	color: #000C66;
+}
+
+section {
+	width: 100%;
+}
+
+section h3 {
+	color: #333333d1;
+	margin-left: 8px;
+	margin-bottom: 10px;
+}
+
+.fieldFormContainer span {
+	color: red;
+}
+#FieldContainerDiv{
+	display: flex;
+	margin-bottom: 10px;
+	gap: 20px;
+}
+
+.Formbox{
+	height: 100;	
+}
+.Formbox .formContainer{
+	display: flex;
+	justify-content: center;
+	text-transform: capitalize;
+}
+.Formbox .formContainer  td{
+	padding: 10px 20px;
+}
+.allFormsTable{
+	width: 90%;
+	margin-left: 5%;
+	text-transform: capitalize;
+	border-top-left-radius: 10px;
+	border-top-right-radius: 10px;
+	overflow: hidden;
+	box-shadow: 10px 10px 5px #aaaaaa;
+}
+.allFormsTable th{
+	background-color: #FFA500;
+	color: black;
+}
+.AddUserContainer{
+	width: 300px;
+	padding: 30px 30px;
+	background-color: #fffcfce6;	
+	line-height: 40px;
+	border-radius: 5px;
+	
+}
+.AddUserContainer span{
+	color: red;
+}
+.Formbox table tr td a{
+	text-decoration: none;
+	color: white;
+}
+.FormsContainer{
+	color: black;
+}
+.FormsContainer table{
+	background-color: white;
+	width: 400px;
+	margin-top: 20px;
+	padding-bottom : 10px;
+	border-radius: 15px;
+	overflow: hidden;
+	box-shadow: 10px 10px 5px #aaaaaa;
+}
+.updateTable{
+	width: 70%;
+	margin-top: 30px;
+	text-transform: capitalize;
+	border-top-left-radius: 10px;
+	border-top-right-radius: 10px;
+	overflow: hidden;
+	box-shadow: 10px 10px 5px #aaaaaa;
+}
+.updateTable th{
+		background-color: #FFA500;
+	color: black;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="full-content-container">
+
+<!------------------- Nav Bar start ----------------->
+
+<nav class="navbar navbar-expand-sm sticky-top">
+
+<div class="container-fluid">
+
+<div class="navbar-header heading">
+
+<button class="navbar-brand" id="openSidebar"
+
+onclick="sidebar_open()">
+
+<i class="fa-solid fa-bars"></i>
+
+</button>
+
+<button class="navbar-brand" id="closeSidebar"
+
+onclick="sidebar_close()">
+
+<i class="fa-solid fa-bars"></i>
+
+</button>
+
+<a class="navbar-brand" href="#" style="font-size: 23px">Forms</a>
+
+</div>
+
+<div>
+
+<ul class="nav navbar-nav navbar-right">
+
+<li><a href="../Logout.jsp"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
+
+</ul>
+
+</div>
+
+</div>
+
+</nav>
+
+<!------------------- Nav Bar end ----------------->
+
+<!------------------- Side Bar start----------------->
+
+<div class="main-content-container">
+
+<aside id="sidebar_container">
+
+<div class="sidebar-header"></div>
+
+<ul class="list-unstyled mt-0" role="menu" style="font-size: 14px;">
+
+<a href="AdminHome.jsp" ><li style="font-weight: 600;">Create Form</li></a>
+
+<a href="AddUser.jsp" ><li style="font-weight: 600;">Add Users</li></a>
+
+<a href="Result.jsp" ><li style="font-weight: 600;">Results</li></a>
+
+</ul>
+
+</aside>
+
+<!----------------- Side Bar end----------------->
+
+<section>
+
+<!------------------ Create Form Start ------------------->
+
+<%
+
+int formId = 0;
+
+try {
+
+Connection con = ConnectionProvider.getCon(); //Establish the connection
+
+Statement st = con.createStatement();
+
+ResultSet rs = st.executeQuery("SELECT * FROM Form ORDER BY formId ASC");
+
+while (rs.next()) {
+
+String formValue = rs.getString("FormID");
+
+formId = Integer.parseInt(formValue); // Get the last FormID
+
+}
+
+formId = formId + 1;
+
+}
+
+catch (Exception e) {
+
+out.print(e);
+
+}
+
+%>
+
+<h3>Create Form</h3>
+
+<form action="createFormAction.jsp" method="post" class="container fieldFormContainer">
+
+<div class="container CreateFormOuterContainer">
+
+<div class="CreateFormContainer">
+
+<input type="text" name="formId" value="<%=formId%>">
+
+<div>
+
+<div class="input-group" style="margin-bottom: 10px">
+
+<label for="title" class="form-label border border-primary" style="width: 130px;">Form Title<span> *</span></label>
+
+<input type="text" name="title" class="form-control" style="border: 1px solid #43A6C6" placeholder="Title" required>
+
+</div>
+
+<div class="input-group" style="margin-bottom: 10px">
+
+<label for="description" class="formlabel" style="width: 143px;">Description<span> *</span></label>
+
+<textarea name="description" style="border: 1px solid #43A6C6" placeholder="Description..." class="form-control" required></textarea>
+
+</div>
+
+</div>
+
+<div>
+
+<div class="input-group" style="margin-bottom: 10px">
+
+<label for="Active" class="col-form-label" style="width: 175px;">Active<span> *</span></label>
+
+<select name="active" class="form-control" style="margin-bottom: 10px; border: 1px solid #43A6C6" required>
+
+<option value="">Select Yes or No</option>
+
+<option value="1">Yes</option>
+
+<option value="0">No</option>
+
+</select>
+
+</div>
+
+<div class="input-group" style="margin-bottom: 10px">
+
+<label for="totalFields" class="col-form-label" style="width: 180px;">End date<span> *</span></label>
+
+<input type="date" id="total" name="End_date" class="form-control" style="border: 1px solid #43A6C6" required>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!------------------ Create Form End ------------------->
+
+<%
+
+int fieldId = 0;
+
+int i = 1;
+
+try {
+
+Connection con = ConnectionProvider.getCon();
+
+Statement st3 = con.createStatement();
+
+ResultSet fieldRs = st3.executeQuery("SELECT * FROM Field ORDER BY FieldID ASC");
+
+while (fieldRs.next()) {
+
+String fieldidValue = fieldRs.getString("FieldID");
+
+fieldId = Integer.parseInt(fieldidValue); //Get the last FieldID
+
+}
+
+fieldId = fieldId + 1;
+
+}
+
+catch (Exception e) {
+
+out.print(e);
+
+}
+
+%>
+
+<!------------------- Create Field Elements Start------------------>
+
+<div class="FieldsOuterContainer container">
+
+<div class="FieldsInnerContainer">
+
+<div class="FieldsContainer" id="FieldsContainer" style="margin-bottom: 30px;">
+
+<div class="field-container">
+
+<input type="text" name="id" id="hiddenFieldId" value="<%= fieldId%>">
+
+<input type="text" name="fieldText" placeholder="Enter a text or question" class="form-control" style="width: 250px; border: 1px solid #43A6C6" required>
+
+<select class="form-select form-control" name="fieldType" id="fieldList<%= i %>" style="width: 250px; border: 1px solid #43A6C6"
+
+onchange="selectedField('fieldList<%= i %>', 'inputFields<%= i %>', '<%= fieldId %>')" required>
+
+<option value="">Select field type</option>
+
+<option value="text">Text</option>
+
+<option value="number">Number</option>
+
+<option value="date">Date</option>
+
+<option value="dropdown">Drop down</option>
+
+<option value="radio">Radio button</option>
+
+<option value="check">Checkbox</option>
+
+<option value="dependentRadio">Dependent Radio</option>
+
+<option value="dependentDrop">Dependent Dropdown</option>
+
+<option value="dependentCheck">Dependent Checkbox</option>
+
+</select>
+
+<div>
+
+<button type="button" class="FieldsAdd btn btn-success"id="FieldsAdd" onclick="AddFields()">
+
+<i class="fa-solid fa-plus"></i>
+
+</button>
+
+</div>
+
+<div id="inputFields<%= i %>" class="inputs"></div>
+
+</div>
+
+</div>
+
+<div class="form-group">
+
+<div class="text-center">
+
+<input type="submit" name="submit" value="Submit" style="background-color: black; color: white;" class="btn sbt-button">
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script type="text/javascript">
+
+var FieldsContainer = document.getElementById("FieldsContainer");
+
+let fieldId = <%= fieldId %>;
+
+let i = 1;
+
+let value=0;
+
+function AddFields(){
+
+i++;
+
+fieldId = fieldId+2;
+
+const fieldContainerDiv = document.createElement("div");
+
+fieldContainerDiv.id ="fieldContainerDiv"+i;
+
+fieldContainerDiv.className = "field-container";
+
+const textField = document.createElement("input");
+
+textField.type = "text";
+
+textField.name = "id";
+
+textField.value = fieldId;
+
+fieldContainerDiv.appendChild(textField);
+
+const textField2 = document.createElement("input");
+
+textField2.type = "text";
+
+textField2.name = "fieldText";
+
+textField2.placeholder="Enter a text or question";
+
+textField2.className="form-control";
+
+textField2.style = "width: 250px;border:1px solid #43A6C6";
+
+fieldContainerDiv.appendChild(textField2);
+
+const inputContainer = document.createElement("div");
+
+inputContainer.innerHTML = '<select class="form-select form-control" name="fieldType" id="fieldList' +
+
+i +
+
+'" style="width: 250px;border:1px solid #43A6C6" onchange="selectedField(\'fieldList' +
+
+i +
+
+'\', \'inputFields' +
+
+i +
+
+'\', \'' +
+
+fieldId +
+
+'\')" required> <option value="">Select field type</option> <option value="text">Text</option> <option value="number">Number</option> <option value="date">Date</option> <option value="dropdown">Drop down</option> <option value="radio">Radio button</option> <option value="check">Check box</option><option value="dependentRadio">Dependent Radio</option><option value="dependentDrop">Dependent Dropdown</option><option value="dependentCheck">Dependent Check box</option></select>';
+
+fieldContainerDiv.appendChild(inputContainer);
+
+const buttonDiv = document.createElement("div");
+
+buttonDiv.innerHTML = '<button type="button" class="FieldsRemove btn btn-danger" id="FieldsRemove" onclick="RemoveFields(\'fieldContainerDiv' + i + '\')" ><i class="fa fa-times" aria-hidden="true"></i></button>';
+
+fieldContainerDiv.appendChild(buttonDiv);
+
+const inputFields = document.createElement("div");
+
+inputFields.id = "inputFields" + i;
+
+inputFields.className = "inputs";
+
+fieldContainerDiv.appendChild(inputFields);
+
+document.getElementById("FieldsContainer").appendChild(fieldContainerDiv);
+
+}
+
+function RemoveFields(fieldDiv){
+
+var fieldContainerDiv = document.getElementById(fieldDiv);
+
+fieldContainerDiv.remove();
+
+}
+
+</script>
+
+<%
+
+int valueId =0;
+
+try{
+
+Connection con = ConnectionProvider.getCon();
+
+Statement st3 = con.createStatement();
+
+ResultSet fieldRs = st3.executeQuery("SELECT * FROM field_values ORDER BY value ASC");
+
+while (fieldRs.next()) {
+
+String fieldidValue = fieldRs.getString("value");
+
+valueId = Integer.parseInt(fieldidValue); //Get the last FieldID
+
+}
+
+valueId = valueId + 1;
+
+}
+
+catch(Exception e){
+
+out.print(e);
+
+}
+
+%>
+
+<script type="text/javascript">
+
+let containerId = 1;
+
+function selectedField(fieldId, inputId, fid) {
+
+var field = document.getElementById(fieldId);
+
+var selectedValue = field.options[field.selectedIndex].value;
+
+var field = document.getElementById(fieldId);
+
+var inputFields = document.getElementById(inputId);
+
+if (selectedValue === "text" || selectedValue === "number" || selectedValue === "date") {
+
+inputFields.innerHTML="";
+
+}
+
+else if(selectedValue === "dependentRadio" || selectedValue === "dependentDrop" || selectedValue === "dependentCheck"){
+
+var inputs = document.querySelectorAll('input[name="valueId"]');
+
+var arrayInputs = Array.from(inputs);
+
+var length = arrayInputs.length;
+
+if(length === 0){
+
+lastValue = <%= valueId %>;
+
+}
+
+else{
+
+arrayInputs.sort((a, b) => a.position - b.position);
+
+var lastValue = arrayInputs[arrayInputs.length - 1].value;
+
+lastValue++;
+
+}
+
+inputFields.innerHTML='<div class="input-container" style="margin-botton:5px;"><div style="display:flex;gap: 20px;flex-wrap:wrap;"><input type="text" name="fieldId" value="' + fid + '"><input type="text" name="valueId" value="'+ lastValue +'"><input type="text" name="value" class="form-control" placeholder="Enter a option" style="width:250px;border:1px solid #43A6C6;" required><button type="button" class="add-button btn btn-success" style="margin-bottom: 5px;" onclick="DependentEnteredValues(this, \'' + fid + '\')"><i class="fa-solid fa-plus"></i></button><button type="button" onclick="DependentValue(this,\'container'+ lastValue +'\')" ><i class="fa fa-chevron-right" aria-hidden="true"></i></button><div id="container'+ lastValue +'"></div><div></div></div>';
+
+const dependentDiv = document.createElement("div");
+
+dependentDiv.id="dependentDiv";
+
+const textField = document.createElement("input");
+
+textField.type = "text";
+
+textField.name = "id";
+
+textField.id = "fieldId";
+
+textField.value = parseInt(fid)+1;
+
+dependentDiv.appendChild(textField);
+
+const textField2 = document.createElement("input");
+
+textField2.type = "text";
+
+textField2.name = "fieldText";
+
+textField2.placeholder="Enter a text or question";
+
+textField2.className="form-control";
+
+textField2.style = "width: 250px;border:1px solid #43A6C6";
+
+dependentDiv.appendChild(textField2);
+
+const dependentSelectDiv = document.createElement("div");
+
+dependentSelectDiv.innerHTML = '<select class="form-select form-control" name="fieldType" style="width: 250px;border:1px solid #43A6C6" required> <option value="">Select field type</option> <option value="text">Text</option> <option value="number">Number</option> <option value="date">Date</option> <option value="dropdown">Drop down</option> <option value="radio">Radio button</option> <option value="check">Check box</option></select>';
+
+dependentDiv.appendChild(dependentSelectDiv);
+
+inputFields.appendChild(dependentDiv);
+
+}
+
+else{
+
+var inputs = document.querySelectorAll('input[name="valueId"]');
+
+var arrayInputs = Array.from(inputs);
+
+var length = arrayInputs.length;
+
+if(length === 0){
+
+lastValue = <%= valueId %>;
+
+}
+
+else{
+
+arrayInputs.sort((a, b) => a.position - b.position);
+
+var lastValue = arrayInputs[arrayInputs.length - 1].value;
+
+lastValue++;
+
+}
+
+inputFields.innerHTML='<div class="input-container" style="margin-botton:5px;"><div style="display:flex;gap: 20px;flex-wrap:wrap;"><input type="text" name="fieldId" value="' + fid + '"><input type="text" name="valueId" value="'+lastValue+'"><input type="text" name="value" class="form-control" placeholder="Enter a option" style="width:250px;border:1px solid #43A6C6;" required><button type="button" class="add-button btn btn-success" style="margin-bottom: 5px;" onclick="EnteredValues(this, \'' + fid + '\')"><i class="fa-solid fa-plus"></i></button></div></div>';
+
+}
+
+}
+
+function EnteredValues(button, fid) {
+
+var inputContainer = button.parentNode;
+
+var inputFields = inputContainer.parentNode;
+
+value++;
+
+if (inputFields.children.length <= 20) {
+
+var inputs = document.querySelectorAll('input[name="valueId"]');
+
+var arrayInputs = Array.from(inputs);
+
+arrayInputs.sort((a, b) => a.position - b.position);
+
+var lastValue = arrayInputs[arrayInputs.length - 1].value;
+
+lastValue++;
+
+var txtNewInputBox = document.createElement('div');
+
+txtNewInputBox.innerHTML = '<div class="input-container" id="input-container'+ lastValue +'" ><div id="RemoveValue'+ value +'" style="display:flex;gap: 20px;flex-wrap:wrap;"><input type="text" name="fieldId" value="' + fid + '"><input type="text" name="valueId" value="'+lastValue+'"><input type="text" name="value" class="form-control" placeholder="Enter a option" style="width:250px;border:1px solid #43A6C6;margin-bottom: 5px;"required><div><button type="button" class="FieldsRemove btn btn-danger" onclick="RemoveValue(\'RemoveValue'+ value +'\')"><i class="fa fa-times" aria-hidden="true"></i></button></div></div></div>';
+
+inputFields.appendChild(txtNewInputBox);
+
+}
+
+}
+
+function DependentEnteredValues(button, fid) {
+
+var inputContainer = button.parentNode;
+
+var inputFields = inputContainer.parentNode;
+
+value++;
+
+if (inputFields.children.length <= 20) {
+
+var inputs = document.querySelectorAll('input[name="valueId"]');
+
+var arrayInputs = Array.from(inputs);
+
+arrayInputs.sort((a, b) => a.position - b.position);
+
+var lastValue = arrayInputs[arrayInputs.length - 1].value;
+
+lastValue++;
+
+console.log(lastValue);
+
+var txtNewInputBox = document.createElement('div');
+
+txtNewInputBox.innerHTML = '<div class="input-container"><div id="RemoveValue'+ value +'" style="display:flex;gap: 20px;flex-wrap:wrap;"><input type="text" name="fieldId" value="' + fid + '"><input type="text" name="valueId" value="'+lastValue+'"><input type="text" name="value" class="form-control" placeholder="Enter a option" style="width:250px;border:1px solid #43A6C6;margin-bottom: 5px;"required><div><button type="button" class="FieldsRemove btn btn-danger" onclick="RemoveValue(\'RemoveValue'+ value +'\')"><i class="fa fa-times" aria-hidden="true"></i></button><button type="button" onclick="DependentValue(this,\'container'+ lastValue +'\')"><i class="fa fa-chevron-right" aria-hidden="true"></i></button><div id="container'+ lastValue +'"><div></div></div></div>';
+
+inputFields.appendChild(txtNewInputBox);
+
+}
+
+}
+
+function RemoveValue(RemoveValueDiv){
+
+var RemoveValueDiv = document.getElementById(RemoveValueDiv);
+
+RemoveValueDiv.remove();
+
+}
+
+function DependentValue(button, containerId) {
+	  var container = document.getElementById(containerId);
+	  container.innerHTML = '<div class="dependent-field"><input type="text" name="value"><button type="button" onclick="AddDependentValue(\'' + containerId + '\')"><i class="fa-solid fa-plus"></i></button></div>';
+	}
+
+	function AddDependentValue(containerId) {
+	  var container = document.getElementById(containerId);
+	  var newField = document.createElement('div');
+	  newField.className = 'dependent-field';
+	  newField.innerHTML = '<input type="text" name="value"><button type="button" onclick="RemoveDependentValue(this.parentNode)">remove</button>';
+	  container.appendChild(newField);
+	}
+
+	function RemoveDependentValue(field) {
+	  var container = field.parentNode;
+	  container.removeChild(field);
+	}
+</script>
+
+</form>
+
+</section>
+
+</div>
+
+</div>
+
+</body>
+
+</html>
