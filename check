@@ -48,3 +48,178 @@ function validateForm() {
   return isValid;
 }
 </script>
+
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="https://kit.fontawesome.com/e61d547b58.js" crossorigin="anonymous"></script>
+  
+  <style type="text/css">
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    
+    .full-content-container {
+      flex: 1;
+    }
+    
+    nav {
+      display: flex;
+      justify-content: space-between;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background-color: #282A35;
+      overflow: hidden;
+    }
+    
+    .heading {
+      display: flex;
+      align-items: center;
+    }
+    
+    #openSidebar {
+      border: none;
+      outline: none;
+      background: transparent;
+      color: white;
+    }
+    
+    nav .heading a {
+      margin-top: 7px;
+      color: white;
+      font-weight: 700;
+      font-size: 23px;
+    }
+    
+    nav .heading a:hover {
+      color: blue;
+    }
+    
+    #logout {
+      margin: 13px 18px;
+      color: white;
+      font-weight: 500;
+      text-decoration: none !important;
+    }
+    
+    .main-contant-container {
+      flex: 1;
+      margin-top: 50px;
+      display: flex;
+    }
+    
+    aside {
+      width: 180px;
+      position: fixed;
+      background-color: #E7E9EB;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    aside a {
+      font-size: 15px;
+      font-weight: 500;
+      padding: 13px 25px;
+      color: black;
+      text-decoration: none !important;
+      color: black;
+    }
+    
+    aside a:hover {
+      background-color: #ffffffad;
+    }
+    
+    section {
+      flex: 1;
+      background-color: #ffffff;
+      padding: 20px;
+      margin-left: 180px;
+    }
+    
+    @media (max-width: 767px) {
+      .heading {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      #logout {
+        margin: 10px 18px;
+      }
+      
+      .main-contant-container {
+        flex-direction: column;
+        margin-top: 70px;
+      }
+      
+      aside {
+        width: 100%;
+        position: static;
+        height: auto;
+        overflow: visible;
+      }
+      
+      section {
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="full-content-container">
+    <nav>
+      <div class="heading">
+        <button class="navbar-brand" id="openSidebar"><i class="fa-solid fa-bars"></i></button>
+        <a href="#"><label>Forms</label></a>
+      </div>
+      <a href="../Logout.jsp" id="logout"><span class="glyphicon glyphicon-log-in"></span> Logout</a>
+    </nav>
+
+    <div class="main-contant-container">
+      <aside>
+        <a href="">Create Form</a>
+        <a href="">Add Users</a>
+        <a href="">Results</a>
+      </aside>
+
+      <section>
+        <h1>Create Form</h1>
+      </section>
+    </div>
+  </div>
+
+<script>
+  $(document).ready(function() {
+    var isToggled = false; // Flag variable to track the toggle state
+    $("#openSidebar").click(function() {
+      var aside = $("aside");
+      var section = $("section");
+      aside.animate({ width: 'toggle' }, "slow");
+      if (isToggled) {
+        section.animate({ 'margin-left': '180px' }, "slow");
+        isToggled = false; // Update the flag variable
+      } else {
+        section.animate({ 'margin-left': '5px' }, "slow");
+        isToggled = true; // Update the flag variable
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
