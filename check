@@ -1,0 +1,50 @@
+<form action="" onsubmit="return validateForm()">
+  <div id="group1">
+    <input type="checkbox" name="check" value="option1">
+    <input type="checkbox" name="check" value="option2">
+    <input type="checkbox" name="check" value="option3">
+  </div>
+
+  <div id="group2">
+    <input type="checkbox" name="check" value="option1">
+    <input type="checkbox" name="check" value="option2">
+    <input type="checkbox" name="check" value="option3">
+  </div>
+
+  <div id="group3">
+    <input type="checkbox" name="check" value="option1">
+    <input type="checkbox" name="check" value="option2">
+    <input type="checkbox" name="check" value="option3">
+  </div>
+
+  <input type="submit">
+</form>
+
+<script>
+function validateForm() {
+  var groups = document.querySelectorAll('[id^="group"]');
+  var isValid = true;
+  var alertShown = false;
+
+  groups.forEach(function(group) {
+    var checkboxes = group.querySelectorAll('input[type="checkbox"]');
+    var checkedCount = 0;
+
+    checkboxes.forEach(function(checkbox) {
+      if (checkbox.checked) {
+        checkedCount++;
+      }
+    });
+
+    if (checkedCount === 0) {
+      isValid = false;
+      if (!alertShown) {
+        alertShown = true;
+        alert('Please select at least one checkbox in each group.');
+      }
+    }
+  });
+
+  return isValid;
+}
+</script>
