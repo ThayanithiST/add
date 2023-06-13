@@ -223,3 +223,42 @@ function validateForm() {
 
 </body>
 </html>
+
+
+import javax.naming.Context;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.InitialDirContext;
+
+public DirContext getLdapContext(String ldapURL, String username, String password) throws Exception {
+    Properties properties = new Properties();
+    properties.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+    properties.put(Context.PROVIDER_URL, ldapURL);
+    properties.put(Context.SECURITY_PRINCIPAL, username);
+    properties.put(Context.SECURITY_CREDENTIALS, password);
+
+    // Establish the LDAP connection
+    DirContext ctx = new InitialDirContext(properties);
+    return ctx;
+}
+
+String ldapURL = "ldap://ldap.example.com:389"; // Replace with your LDAP server URL
+String username = request.getParameter("username");
+String password = request.getParameter("password");
+
+try {
+    // Connect to LDAP
+    DirContext ctx = getLdapContext(ldapURL, username, password);
+    // Authentication successful
+    // Perform any additional checks or actions
+
+    // Close the LDAP connection
+    ctx.close();
+
+    // Redirect to a success page or perform other actions
+    response.sendRedirect("success.jsp");
+} catch (Exception e) {
+    // Authentication failed
+    // Handle the failure (e.g., display an error message)
+    response.sendRedirect("error.jsp");
+}
+
