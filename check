@@ -1450,3 +1450,34 @@ document.getElementById("Date").min = date;
 
 </body>
 </html>
+
+
+function DependentSelectedField(fieldId, inputId, fid, inputField) {
+  var field = document.getElementById(fieldId);
+  var selectedValue = field.options[field.selectedIndex].value;
+
+  var DependentinputFields = document.getElementById(inputId);
+  DependentinputFields.innerHTML = ""; // Clear previous fields
+
+  var option = document.querySelectorAll('[id=dependentOption]');
+  var dependentId = document.querySelectorAll('[class=dependentId]');
+
+  console.log(dependentId);
+
+  for (let i = 0; i < option.length; i++) { // Fixed typo: changed "lenght" to "length"
+    var optionValue = option[i].value;
+    var dependentIdValue = dependentId[i].value; // Retrieve dependent ID value
+
+    // Create a text field for the option
+    var textFieldOption = document.createElement('input');
+    textFieldOption.type = 'text';
+    textFieldOption.value = optionValue;
+    DependentinputFields.appendChild(textFieldOption);
+
+    // Create a text field for the dependent ID
+    var textFieldId = document.createElement('input');
+    textFieldId.type = 'text';
+    textFieldId.value = dependentIdValue;
+    DependentinputFields.appendChild(textFieldId);
+  }
+}
