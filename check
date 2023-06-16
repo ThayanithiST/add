@@ -1481,3 +1481,34 @@ function DependentSelectedField(fieldId, inputId, fid, inputField) {
     DependentinputFields.appendChild(textFieldId);
   }
 }
+
+<form>
+  <div>
+    <input type="radio" name="radio" value="1" onclick="selectOne(this)">
+    <input type="radio" name="radio" value="2" onclick="selectOne(this)">
+  </div>
+
+  <div>
+    <input type="radio" name="radio" value="1" onclick="selectOne(this)">
+    <input type="radio" name="radio" value="2" onclick="selectOne(this)">
+  </div>
+
+  <div>
+    <input type="radio" name="radio" value="1" onclick="selectOne(this)">
+    <input type="radio" name="radio" value="2" onclick="selectOne(this)">
+  </div>
+</form>
+
+<script>
+  function selectOne(selectedRadio) {
+    const radioGroup = document.getElementsByName(selectedRadio.name);
+
+    for (let i = 0; i < radioGroup.length; i++) {
+      if (radioGroup[i] !== selectedRadio) {
+        radioGroup[i].checked = false;
+      }
+    }
+  }
+</script>
+
+
