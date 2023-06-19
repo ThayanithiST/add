@@ -1,0 +1,35 @@
+<div class="input-container"><div style="display:flex;gap: 20px;flex-wrap:wrap;"><input type="text" name="fieldId" value="' + fid + '"><input type="text" name="dependentId" value="0"><input type="text" name="valueId" value="' + lastValue + '"><input type="text" name="value" class="fieldText" placeholder="Enter an option" style="width:250px;border:1px solid #43A6C6;margin-bottom: 10px;" required><button type="button" id ="addButton" class="btn" style="margin-bottom: 5px;" onclick="EnteredValues(this)"><i class="fa-solid fa-plus"></i></button></div></div>
+  <script type="text/javascript">
+  function EnteredValues(button) {
+    var inputContainer = button.parentNode;
+    var inputFields = inputContainer.parentNode;
+
+    var firstInputField = inputFields.querySelector('input[name="value"]');
+    var firstInputValue = firstInputField.value;
+
+    var txtNewInputBox = document.createElement('div');
+    txtNewInputBox.innerHTML =
+      '<div class="input-container">' +
+      '<div style="display:flex;gap: 20px;flex-wrap:wrap;">' +
+      '<input type="text" name="fieldId">' +
+      '<input type="text" name="dependentId" value="0">' +
+      '<input type="text" name="valueId">' +
+      '<input type="text" name="value" class="fieldText" placeholder="Enter an option" style="width:250px;border:1px solid #43A6C6;margin-bottom: 10px;"required value="' + firstInputValue + '">' +
+      '<div><button type="button" class="FieldsRemove btn" onclick="RemoveValue(this.parentNode.parentNode.parentNode)">x</button></div>' +
+      '</div></div>';
+
+    // Insert the new input field after the first input field if it exists
+    
+        inputFields.appendChild(txtNewInputBox);
+
+
+    // Clear the value of the first input field
+    if (firstInputField) {
+      firstInputField.value = '';
+    }
+  }
+
+  function RemoveValue(container) {
+    container.remove();
+  }
+</script>
