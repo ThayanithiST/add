@@ -1,0 +1,660 @@
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<%@ page import="connection.ConnectionProvider"%>
+<%@ page import="connection.EncryptDecrypt"%>
+<%@ page import="java.sql.*"%>
+<%@ page import="connection.LogWriter"%>
+
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="ISO-8859-1">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+		<script src="https://kit.fontawesome.com/e61d547b58.js" crossorigin="anonymous"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+		<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+		<link rel="stylesheet" href="../css/style.css">
+		<script src="../js/sidebar.js"></script> 
+				<style type="text/css">
+			#AdminSidebarComponent .sidebarActivity {
+			    color: black;
+			   	background: #4b7bf521;
+			}
+		</style>
+		<title>Create Activity</title>
+	</head>
+	<body>
+		<div class="wrapper">
+			<%@ include file="../navbar/AdminSidebar.jsp" %>
+				
+			<div id="content">
+				<%@ include file="../navbar/Navbar.jsp" %>
+			
+				<section id="main-content">
+					<!------------------ Create Form Start ------------------->
+					<script src="../js/validation.js"></script>
+					<%
+					int formId = 0;
+					Connection con = ConnectionProvider.getCon();
+					try 
+					{
+						Statement st = con.createStatement();
+						ResultSet rs = st.executeQuery("select form_id from Form order by form_id asc");
+						
+						while (rs.next()) 
+						{
+							String formValue = rs.getString("form_id");
+							formId = Integer.parseInt(formValue);      // Get the last FormID
+						}
+						
+						formId = formId + 1;
+						
+						
+					} 
+					catch (Exception e) 
+					{
+						out.print(e);
+					}
+					int i 		= 1;
+					int fieldId = 0;
+					try 
+					{
+						Statement st3 		= con.createStatement();
+						ResultSet fieldRs   = st3.executeQuery("select field_id from Field order by field_id asc");
+						
+						while (fieldRs.next()) 
+						{
+							String fieldidValue = fieldRs.getString("field_id");
+							fieldId 			= Integer.parseInt(fieldidValue);                //Get the last FieldID
+						}
+						fieldId = fieldId + 1;
+					} 
+					catch (Exception e) 
+					{
+						out.print(e);
+					}
+				
+					int valueId = 0;
+
+					try 
+					{
+						Statement st3 = con.createStatement();
+
+						ResultSet fieldRs = st3.executeQuery("select value_id from Field_Value order by value_id asc");
+
+						while (fieldRs.next()) 
+						{
+
+							String fieldidValue = fieldRs.getString("value_id");
+							valueId 		    = Integer.parseInt(fieldidValue); //Get the last FieldID
+
+						}
+						valueId = valueId + 1;
+					}
+					catch (Exception e) 
+					{
+						out.print(e);
+					}
+					%>
+					<h3>Create Activity</h3>
+	
+					<form action="createFormAction.jsp" method="post" class="container createActivityAllFieldsForm">
+	
+						<div class="CreateFormContainer" style="overflow: hidden">
+							<input type="hidden" name="formId" value="<%= formId %>">
+							
+							<div class="createFormDetailsDiv">
+								<label  class="form-label border border-primary">Activity Title<span> *</span></label> 
+								<textarea  name="title" id="txtActivityTitle" class="form-control" placeholder="Title"  oninput="checkValidInputValidation('txtActivityTitle','250','txtActivityTitleValidationResult')" maxlength="250" required></textarea>
+								<p class="text-danger validationField" id="txtActivityTitleValidationResult"></p>
+							</div>
+
+							<div class="createFormDetailsDiv">
+								<label  class="formlabel" >Description<span> *</span></label>
+								<textarea name="description"  id="txtActivityDescription" placeholder="Description..." class="form-control" oninput="checkValidInputValidation('txtActivityDescription','500','txtActivityDescriptionValidationResult')" maxlength="500" required></textarea>
+								<p class="text-danger validationField" id="txtActivityDescriptionValidationResult"></p>
+							</div>
+							
+							<div class="createFormDetailsDiv">
+								<label  class="col-form-label" >Active<span> *</span></label> 
+								<select name="active" id="ddCreateActivityActive" class="form-control"  required>
+									<option value="">Select Yes or No</option>
+									<option value="1">Yes</option>
+									<option value="0">No</option>
+								</select>
+							</div>
+							
+							<div class="createFormDetailsDiv">
+								<label  class="col-form-label">End Date<span> *</span></label> 
+								<input type="date" id="Date" name="End_date" class="form-control" required>
+							</div>
+							<div class="createFormDetailsDiv">
+								<label  class="col-form-label" >Project<span> *</span></label> 
+								<select name="project" id="ddCreateActivityProject" class="form-control" required>
+									<option value="">Select Project</option>
+									<option value="NDS Common">NDS Common</option>
+									<%
+									Statement getProject   = con.createStatement();
+									ResultSet getProjectRs = getProject.executeQuery("select DISTINCT ProjectName from [VW_Active_Employees_NDS]");
+									while(getProjectRs.next())
+									{
+								    %>
+										<option value="<%=getProjectRs.getString("ProjectName")%>"><%=getProjectRs.getString("ProjectName")%></option>
+									<%	
+									}
+									%>
+								</select>
+							</div>
+							
+							<div class="createFormDetailsDiv">
+							<label>Select Form Type<span> *</span></label>
+							<select name="formType" id="ddCreateActivityFormType"class="form-control"  required>
+								<option value="">Select Form Type</option>
+								<option value="NDS">NDS Form</option>
+								<option value="General">General Form</option>
+							</select>
+							</div>
+									
+							<div class="createFormDetailsDiv">
+								<label>If you want to send email?<span> *</span></label>
+								<div style="display: flex; gap: 15px;">
+									<div>
+										<input type="radio" name="Email_sender" value="yes" required> Yes
+									</div>
+									<div>
+										<input type="radio" name="Email_sender" value="no" required> No
+									</div>
+								</div>
+							</div>
+						</div>	
+						
+						<div class="createActivityFieldsDiv">
+							<div class="createActivityFieldAndOptionDiv">
+								<div class="text-right createActivityFieldRemoveDiv"><button class="btnCreateActivityFieldRemove" onclick="removeField(this)"><i class="fa-solid fa-trash-can"></i></button></div>
+								<div class="createActivityFieldDiv">
+								<input type="hidden" name="id" id="hiddenFieldId" value="<%= fieldId %>"> 
+								<div class="divCreateActivityFiledLabel">
+									<input type="text" name="fieldText" id="txtActivityfieldText<%= i %>" placeholder="Enter Field Label" class="fieldText"  maxLength="100" oninput = "checkValidInputValidation('txtActivityfieldText<%= i %>','100','txtActivityfieldTextValidationResult')" required>
+									<p class="text-danger validationField" id="txtActivityfieldTextValidationResult"></p>
+								</div>
+											
+								<div class="divCreateActivityFiledType">
+									<select class="form-select form-control" name="fieldType" id="fieldList<%= i %>"
+									onchange="selectedField('fieldList<%= i %>', 'CreateActivityOptionsDiv<%= i %>', '<%= fieldId %>')" required>
+									<option value="">Select field type</option>
+									<option value="text">Text</option>
+									<option value="textarea">Text Area</option>
+									<option value="number">Number</option>
+									<option value="date">Date</option>
+									<option value="dropdown">Drop down</option>
+									<option value="radio">Radio button</option>
+									<option value="check">Checkbox</option>
+									<option value="dependentRadio">Dependent Radio</option>
+									<option value="dependentDrop">Dependent Dropdown</option>
+									</select>
+								</div>
+								<div class="priorityDiv">
+									<label>Priority</label> 
+									<input type="number" name="priority" class="form-control text-center priority"  value="1" min="1">
+								</div>
+									<input type="hidden" name="IsDependent" value="no">
+								</div>
+								<div id="CreateActivityDependentFieldDiv<%= fieldId %>"></div>
+								<div id="CreateActivityOptionsDiv<%= i %>"></div>
+							</div>
+						</div>
+						
+						
+						<div><button type="button" class="btn btn-primary" onclick="addNewFields()">Add New Field</button></div>
+
+					</form>	
+					<script>
+					let fieldId = <%= fieldId %>;
+					let i = <%= i %>;
+
+					function addNewFields() {
+					    // Increment fieldId and i
+					    fieldId += 2;
+					    i++;
+
+					    // Create a new createActivityFieldAndOptionDiv
+					    let newDiv = document.createElement("div");
+					    newDiv.className = "createActivityFieldAndOptionDiv";
+
+					    // Add your content to the newDiv with the updated fieldId and i
+					    newDiv.innerHTML =
+					        '<div class="text-right createActivityFieldRemoveDiv"><button class="btnCreateActivityFieldRemove" onclick="removeField(this)"><i class="fa-solid fa-trash-can"></i></button></div>' +
+					        '<div class="createActivityFieldDiv">' +
+					        '<input type="hidden" name="id" id="hiddenFieldId" value="' + fieldId + '">' +
+					        '<div class="divCreateActivityFiledLabel">' +
+					        '<input type="text" name="fieldText" id="txtActivityfieldText' + i + '" placeholder="Enter Field Label" class="fieldText" maxLength="100" oninput="checkValidInputValidation(\'txtActivityfieldText' + i + '\',\'100\',\'txtActivityfieldTextValidationResult\')" required>' +
+					        '<p class="text-danger validationField" id="txtActivityfieldTextValidationResult"></p>' +
+					        '</div>' +
+
+					        '<div class="divCreateActivityFiledType">' +
+					        '<select class="form-select form-control" name="fieldType" id="fieldList' + i + '" onchange="selectedField(\'fieldList' + i + '\', \'CreateActivityOptionsDiv' + i + '\', \'' + fieldId + '\')" required>' +
+					        '<option value="">Select field type</option>' +
+					        '<option value="text">Text</option>' +
+					        '<option value="textarea">Text Area</option>' +
+					        '<option value="number">Number</option>' +
+					        '<option value="date">Date</option>' +
+					        '<option value="dropdown">Drop down</option>' +
+					        '<option value="radio">Radio button</option>' +
+					        '<option value="check">Checkbox</option>' +
+					        '<option value="dependentRadio">Dependent Radio</option>' +
+					        '<option value="dependentDrop">Dependent Dropdown</option>' +
+					        '</select>' +
+					        '</div>' +
+					        '<div class="priorityDiv">' +
+					        '<label>Priority</label>' +
+					        '<input type="number" name="priority" class="form-control text-center priority" value="' + i + '" min="1">' +
+					        '</div>' +
+					        '<input type="hidden" name="IsDependent" value="no">' +
+					        '</div>' +
+					        '<div id="CreateActivityDependentFieldDiv' + fieldId + '"></div>' +
+					        '<div id="CreateActivityOptionsDiv' + i + '"></div>';
+
+					    // Append the newDiv to the container
+					    let container = document.querySelector(".createActivityFieldsDiv");
+					    container.appendChild(newDiv);
+					}
+
+					function removeField(button) {
+					    // Get the parent of the button (which is the container div)
+					    let containerDiv = button.parentElement.parentElement;
+
+					    // Check if there is more than one field div
+					    let allFields = document.querySelectorAll(".createActivityFieldAndOptionDiv");
+
+					    // Ensure there is at least one field before removing
+					    if (allFields.length > 1) {
+					        containerDiv.remove();
+					        updateFieldPriorities();
+					    } else {
+					        alert("At least one field is required.");
+					    }
+					}
+
+					function updateFieldPriorities() {
+					    // Select all the priority input elements
+					    let priorityInputs = document.querySelectorAll(".priority");
+
+					    // Loop through each priority input and set its value based on the index
+					    priorityInputs.forEach((input, index) => {
+					        input.value = index + 1;
+					    });
+					}
+
+					function selectedField(fieldListId, optionsDivId, fieldId) {
+					    // Get the selected field type
+					    let selectedFieldType = document.getElementById(fieldListId).value;
+					    let DependentFieldDiv = document.getElementById("CreateActivityDependentFieldDiv" + fieldId);
+					    DependentFieldDiv.innerHTML = ''; // Clear the dependent field div
+					    // Clear the options div
+					    let optionsDiv = document.getElementById(optionsDivId);
+					    optionsDiv.innerHTML = '';
+
+					    // Create input fields based on the selected field type
+					    switch (selectedFieldType) {
+					        case 'text':
+					            optionsDiv.innerHTML = '<input type="text" name="text" placeholder="Enter Text" class="form-control" readonly>';
+					            break;
+					        case 'textarea':
+					            optionsDiv.innerHTML = '<textarea name="textarea" placeholder="Enter Text Area" class="form-control" readonly></textarea>';
+					            break;
+					        case 'number':
+					            optionsDiv.innerHTML = '<input type="number" name="number" placeholder="Enter Number" class="form-control" readonly>';
+					            break;
+					        case 'date':
+					            optionsDiv.innerHTML = '<input type="date" name="date" class="form-control" readonly>';
+					            break;
+					        case 'dropdown':
+					        case 'radio':
+					        case 'check':
+					            var inputs = document.querySelectorAll('input[name="valueId"]');
+					            var arrayInputs = Array.from(inputs);
+					            var lastValue;
+
+					            if (arrayInputs.length === 0) {
+					                lastValue = 0;
+					            } else {
+					                arrayInputs.sort((a, b) => {
+					                    return Number(b.value) - Number(a.value);
+					                });
+					                lastValue = Number(arrayInputs[0].value) + 1;
+					            }
+
+					            // Conditional HTML based on selectedFieldType
+					            let conditionalHtml = '<div class="createActvityoptionDiv">' +
+					                '<input type="hidden" name="valueId" value="' + lastValue + '">' +
+					                '<input type="hidden" name="fieldId" value="' + fieldId + '">' +
+					                '<input type="hidden" name="dependentId" value="0"><div>';
+
+					            if (selectedFieldType === 'radio') {
+					                conditionalHtml += '<i class="fa-regular fa-circle"></i>';
+					            } else if (selectedFieldType === 'check') {
+					                conditionalHtml += '<i class="fa-regular fa-square"></i>';
+					            } else {
+					                conditionalHtml += '<i class="fa-solid fa-angle-down"></i>';
+					            }
+
+					            conditionalHtml += ' <input type="text" name="value" id="txtCreateActivityOption' + lastValue + '" class="optionText" maxLength="100" placeholder="Enter an option" oninput="checkValidInputValidation(\'txtCreateActivityOption' + lastValue + '\', \'100\', \'txtCreateActivityOptionValidationResult' + lastValue + '\')" required>' +
+					                '<p class="text-danger validationField" id="txtCreateActivityOptionValidationResult' + lastValue + '"></p>' +
+					                '</div>' +
+					                '<button type="button" class="optionRemovebtn" onclick="removeOption(this,\'' + optionsDivId + '\')"><i class="fa-solid fa-trash-can"></i></button>' +
+					                '</div>' +
+					                '<button type="button" class="btnCreateActivityAddOption" onclick="addOption(\'' + optionsDivId + '\',' + fieldId + ',0,\'' + selectedFieldType + '\',\'+option+\')"><i class="fa-solid fa-plus"></i> Add Option</button>';
+
+					            optionsDiv.innerHTML = conditionalHtml;
+					            break;
+					        default:
+					            var dependntDiv = '<div class="createActivityFieldDiv">' +
+					                '<input type="hidden" name="id" id="hiddenFieldId" value="' + (parseInt(fieldId) + 1) + '">' +
+					                '<div class="divCreateActivityFiledLabel">' +
+					                '<input type="text" name="fieldText" id="txtActivityfieldText' + i + '" placeholder="Enter Dependent Field Label" class="fieldText" maxLength="100" oninput="checkValidInputValidation(\'txtActivityfieldText' + i + '\',\'100\',\'txtActivityfieldTextValidationResult\')" required>' +
+					                '<p class="text-danger validationField" id="txtActivityfieldTextValidationResult"></p>' +
+					                '</div>' +
+
+					                '<div class="divCreateActivityFiledType">' +
+					                '<select class="form-select form-control" name="fieldType" id="dependentFieldList' + fieldId + '" onchange="dependentSelectedField(\'dependentFieldList' + fieldId + '\', \'' + optionsDivId + '\', \'' + fieldId + '\',\''+ selectedFieldType +'\')" required>' +
+					                '<option value="">Select dependent field</option>' +
+					                '<option value="text">Text</option>' +
+					                '<option value="dropdown">Drop down</option>' +
+					                '<option value="check">Check box</option>' +
+					                '</select>' +
+					                '</div>' +
+					                '<input type="hidden" name="IsDependent" value="yes">' +
+					                '</div>';
+					            DependentFieldDiv.innerHTML = dependntDiv;
+					            break;
+					    }
+					}
+					
+					function dependentSelectedField(fieldListId, optionsDivId, fieldId, selectedFieldType) {
+					    let dependentSelectedFieldType = document.getElementById(fieldListId).value;
+					    let optionsDiv = document.getElementById(optionsDivId);
+					    optionsDiv.innerHTML = '';
+					    var inputs = document.querySelectorAll('input[name="valueId"]');
+					    var arrayInputs = Array.from(inputs);
+					    var lastValue;
+
+					    if (arrayInputs.length === 0) {
+					        lastValue = 0;
+					    } else {
+					        arrayInputs.sort((a, b) => {
+					            return Number(b.value) - Number(a.value);
+					        });
+					        lastValue = Number(arrayInputs[0].value) + 1;
+					    }
+
+					    // Conditional HTML based on dependentSelectedFieldType
+					    let conditionalHtml = '<div class="createActvityoptionDiv">' +
+					        '<input type="hidden" name="valueId" value="' + lastValue + '">' +
+					        '<input type="hidden" name="fieldId" value="' + fieldId + '">' +
+					        '<input type="hidden" name="dependentId" value="0"><div>';
+
+					    if (selectedFieldType === 'dependentRadio') {
+					        conditionalHtml += '<i class="fa-regular fa-circle"></i>';
+					    } else {
+					        conditionalHtml += '<i class="fa-solid fa-angle-down"></i>';
+					    }
+
+					    conditionalHtml += ' <input type="text" name="value" id="txtCreateActivityOption' + lastValue + '" class="optionText" maxLength="100" placeholder="Enter an option" oninput="checkValidInputValidation(\'txtCreateActivityOption' + lastValue + '\', \'100\', \'txtCreateActivityOptionValidationResult' + lastValue + '\')" required>' +
+					        '<p class="text-danger validationField" id="txtCreateActivityOptionValidationResult' + lastValue + '"></p>' +
+					        '</div>' +
+					        '<button type="button" class="optionRemovebtn" onclick="removeOption(this,\'' + optionsDivId + '\')"><i class="fa-solid fa-trash-can"></i></button>' +
+					        '<button type="button" class="btnAddChild btn-primary" onclick="addDependentField(\'dependentOptionDiv' + lastValue + '\',' + fieldId + ',' + lastValue + ',\'' + dependentSelectedFieldType + '\')">Add Child</button>' +
+					        '<div id="dependentOptionDiv' + lastValue + '"></div>' +
+					        '</div>' +
+					        '<button type="button" class="btnCreateActivityAddOption" onclick="addOption(\'' + optionsDivId + '\',' + fieldId + ',' + lastValue + ',\'' + selectedFieldType + '\',\'dependentOption\',\'' + dependentSelectedFieldType + '\')"><i class="fa-solid fa-plus"></i> Add Option</button>';
+
+					    optionsDiv.innerHTML = conditionalHtml;
+					}
+
+					function addOption(optionsDivId, fieldId, dependentId, selectedFieldType, typeOfOption, dependentSelectedFieldType) {
+					    var inputs = document.querySelectorAll('input[name="valueId"]');
+					    var arrayInputs = Array.from(inputs);
+					    var lastValue;
+
+					    if (arrayInputs.length === 0) {
+					        lastValue = 0;
+					    } else {
+					        arrayInputs.sort((a, b) => {
+					            return Number(b.value) - Number(a.value);
+					        });
+					        lastValue = Number(arrayInputs[0].value) + 1;
+					    }
+
+					    // Conditional HTML based on selectedFieldType
+					    let conditionalHtml = '<div class="createActvityoptionDiv">' +
+					        '<input type="hidden" name="valueId" value="' + lastValue + '">' +
+					        '<input type="hidden" name="fieldId" value="' + fieldId + '">' +
+					        '<input type="hidden" name="dependentId" value="' + dependentId + '"><div>';
+
+					    if (selectedFieldType === 'radio') {
+					        conditionalHtml += '<i class="fa-regular fa-circle"></i>';
+					    } else if (selectedFieldType === 'check') {
+					        conditionalHtml += '<i class="fa-regular fa-square"></i>';
+					    } else if (selectedFieldType === 'dropdown') {
+					        conditionalHtml += '<i class="fa-solid fa-angle-down"></i>';
+					    } else if (selectedFieldType === 'dependentRadio') {
+					        conditionalHtml += '<i class="fa-regular fa-circle"></i>';
+					    } else {
+					        conditionalHtml += '<i class="fa-solid fa-angle-down"></i>';
+					    }
+
+					    conditionalHtml += ' <input type="text" name="value" id="txtCreateActivityOption' + lastValue + '" class="optionText" maxLength="100" placeholder="Enter an option" oninput="checkValidInputValidation(\'txtCreateActivityOption' + lastValue + '\', \'100\', \'txtCreateActivityOptionValidationResult' + lastValue + '\')" required>' +
+					        '<p class="text-danger validationField" id="txtCreateActivityOptionValidationResult' + lastValue + '"></p>' +
+					        '</div>' +
+					        '<button type="button" class="optionRemovebtn" onclick="removeOption(this,\'' + optionsDivId + '\')"><i class="fa-solid fa-trash-can"></i></button>';
+					    if (typeOfOption === 'dependentOption') {
+					        conditionalHtml += '<button type="button" class="btnAddChild btn-primary" onclick="addDependentField(\'dependentOptionDiv' + lastValue + '\',' + fieldId + ',' + lastValue + ',\'' + dependentSelectedFieldType + '\')">Add Child</button>' +
+					            '<div id="dependentOptionDiv' + lastValue + '"></div>';
+					    }
+					    conditionalHtml += '</div>';
+
+					    let optionsDiv = document.getElementById(optionsDivId);
+
+					    // Create a new container div to hold the option and the "Add Option" button
+					    let containerDiv = document.createElement('div');
+					    containerDiv.classList.add('createActivityOptionContainer');
+
+					    // Append the option and the "Add Option" button to the container
+					    containerDiv.innerHTML = conditionalHtml;
+
+					    // Append the container to the optionsDiv before the "Add Option" button
+					    optionsDiv.insertBefore(containerDiv, optionsDiv.lastElementChild);
+					}
+
+					function removeOption(button, optionsDivId) {
+					    let optionsDiv = document.getElementById(optionsDivId);
+					    let optionTextInputs = optionsDiv.querySelectorAll('input[name="value"]');
+					    // Check if there is only one option left before removing
+					    if (optionTextInputs.length > 1) { // Adjust the number as needed
+					        let optionDiv = button.parentElement;
+					        optionDiv.remove();
+					    } else {
+					        alert('At least one option is required.');
+					    }
+					}
+
+					function addDependentField(dependentOptionDivId, fieldId, dependentId, dependentSelectedFieldType) {
+					    var dependentOptionsDiv = document.getElementById(dependentOptionDivId);
+					    var inputs = document.querySelectorAll('input[name="valueId"]');
+					    var arrayInputs = Array.from(inputs);
+					    var lastValue;
+
+					    if (arrayInputs.length === 0) {
+					        lastValue = 0;
+					    } else {
+					        arrayInputs.sort((a, b) => {
+					            return Number(b.value) - Number(a.value);
+					        });
+					        lastValue = Number(arrayInputs[0].value) + 1;
+					    }
+					    if (dependentSelectedFieldType === 'text') {
+					        let textElement = '<div class="createActvityoptionDiv">' +
+					            '<input type="hidden" name="valueId" value="' + lastValue + '">' +
+					            '<input type="hidden" name="fieldId" value="' + (parseInt(fieldId) + 1) + '">' +
+					            '<input type="hidden" name="dependentId" value="' + dependentId + '">' +
+					            '<input type="text" name="value"  placeholder="Text field">' +
+					            '<button type="button" class="optionRemovebtn" onclick="removeDependentOption(this,\'' + dependentOptionDivId + '\')"><i class="fa-solid fa-trash-can"></i></button></div>';
+					        dependentOptionsDiv.insertAdjacentHTML('beforeend', textElement);
+					    } else {
+					        let dependentOption = '<div class="createActvityoptionDiv">' +
+					            '<input type="hidden" name="valueId" value="' + lastValue + '">' +
+					            '<input type="hidden" name="fieldId" value="' + (parseInt(fieldId) + 1) + '">' +
+					            '<input type="hidden" name="dependentId" value="' + dependentId + '">' +
+					            '<div>';
+
+					        if (dependentSelectedFieldType === 'dropdown') {
+					            dependentOption += '<i class="fa-solid fa-angle-down"></i>';
+					        } else if (dependentSelectedFieldType === 'check') {
+					            dependentOption += '<i class="fa-regular fa-square"></i>';
+					        } else {
+					            dependentOption += '';
+					        }
+
+					        dependentOption += ' <input type="text" name="value" id="txtCreateActivityOption' + lastValue + '" class="optionText" maxLength="100" placeholder="Enter an option" oninput="checkValidInputValidation(\'txtCreateActivityOption' + lastValue + '\', \'100\', \'txtCreateActivityOptionValidationResult' + lastValue + '\')" required>' +
+					            '<p class="text-danger validationField" id="txtCreateActivityOptionValidationResult' + lastValue + '"></p>' +
+					            '</div>' +
+					            '<button type="button" class="optionRemovebtn" onclick="removeDependentOption(this,\'' + dependentOptionDivId + '\')"><i class="fa-solid fa-trash-can"></i></button></div>' +
+					            '<button type="button" class="btnCreateActivityAddOption" onclick="addOption(\'' + dependentOptionDivId + '\',' + (parseInt(fieldId) + 1) + ',' + dependentId + ',\'' + dependentSelectedFieldType + '\',\'Option\',\'' + dependentSelectedFieldType + '\')"><i class="fa-solid fa-plus"></i>Add Option</button>';
+					        dependentOptionsDiv.insertAdjacentHTML('beforeend', dependentOption);
+					    }
+					}
+
+					function removeDependentOption(button, dependentOptionDivId) {
+					    let optionDiv = button.parentElement;
+					    optionDiv.remove();
+					}
+
+					</script>
+				</section>
+			</div>
+		</div>	
+	</body>
+</html>
+
+                                                                                                                                                                                                                                                
+Style
+   .createActivityAllFieldsForm{
+	background-color: #f8f9fa;
+	width: 75%;
+	padding: 30px 30px;
+	
+}
+.createActivityAllFieldsForm span {
+	color: red;
+	overflow: hidden;
+}
+
+.CreateFormContainer {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 20px;
+	background-color: #F2F2F2;
+	padding: 30px 30px;
+	margin-bottom: 20px;
+	border-top: 4px solid #4B7BF5;
+	border-radius: 5px;
+}
+
+
+
+.createFormDetailsDiv textarea {
+	width: 400px;
+	
+}
+
+.createFormDetailsDiv input[type="date"], .createFormDetailsDiv select {
+	width: 400px;
+}
+
+.createActivityFieldAndOptionDiv{
+	background-color: #F2F2F2;
+	padding: 10px 30px 30px 30px;
+	margin-bottom: 20px;
+	border-radius: 5px;
+}
+.createActivityFieldDiv{
+	display: flex;
+	gap: 20px;
+	flex-wrap: wrap;
+}
+.createActivityFieldRemoveDiv{
+	margin-bottom: 10px;
+	margin-right: 20px;
+	border-bottom:1px solid #d9d9d9;
+}
+.btnCreateActivityFieldRemove{
+	background: none;
+	outline: none;
+	border: none;
+}
+.divCreateActivityFiledLabel input {
+	width: 430px;
+}
+
+.divCreateActivityFiledType select {
+	width: 220px;
+}
+
+.priorityDiv input {
+	width: 60px;
+}
+.createActvityoptionDiv{
+	display: flex;
+	gap: 15px;
+}
+.fieldText {
+	border: none;
+	outline: none;
+	height: 35px;
+	border-radius: 3px;
+	padding-left: 8px;
+}
+.fieldText:hover,.fieldText:focus{
+	border-bottom: 2.5px solid #4B7BF5;
+}
+.optionText{
+	border: none;
+	outline: none;
+	height: 35px;
+	border-radius: 3px;
+	padding-left: 8px;
+	width: 300px;
+}
+.optionText:hover,.optionText:focus{
+	border-bottom: 2.5px solid #4B7BF5;
+}
+.optionRemovebtn{
+	height: 35px;
+	outline: none;
+	border: none;
+	background: none;
+}
+.btnAddChild{
+	height: 35px;
+}
+.btnCreateActivityAddOption{
+	background: none;
+	border: none;
+	outline: none;
+	color: #4B7BF5;
+	font-size: 15px;
+	font-weight: 600;
+}
+.priorityDiv {
+	display: flex;
+	gap: 10px
+}
+
+.priorityDiv label {
+	margin-top: 5px;
+}
+                                                                                                                                                                                                                                             
+                                                                                                                                                                                                                                                
