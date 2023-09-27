@@ -1,0 +1,238 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ page import="connection.ConnectionProvider"%>
+<%@ page import="connection.GetDashboardDetails"%>
+<%@ page import="java.sql.*"%>
+<%@ page import="connection.LogWriter"%>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="https://kit.fontawesome.com/e61d547b58.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/sidebar.js"></script>
+     <style type="text/css">
+        #AdminSidebarComponent .sidebarAdminHome {
+            color: black;
+            background: #4b7bf521;
+        }
+
+        .SliderAndAnniversaryMembersDiv {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            width: 97%;
+            margin-top: 20px;
+        }
+        .adminHomeSlider{
+        padding-top: 20px;
+        padding-left: 90px;
+        }
+        .slider-container {
+            position: relative;
+            overflow: hidden;
+            width:700px; 
+        }
+
+        .slide {
+            display: none;
+            width: 100%;
+        }
+
+        .slide img {
+            height: 400px;
+            width: 100%;
+            object-fit: cover; /* Ensure images maintain their aspect ratio */
+        }
+
+        .caption {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%; /* Full width */
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px;
+    text-align: center;
+}
+
+        /* Next & previous buttons */
+        .prev, .next {
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            width: auto;
+            padding: 16px;
+            margin-top: -22px;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            transition: 0.6s ease;
+            border-radius: 0 3px 3px 0;
+            user-select: none;
+        }
+
+        /* Position the "next button" to the right */
+        .next {
+            right: 0;
+            border-radius: 3px 0 0 3px;
+        }
+
+        /* On hover, add a black background color with a little bit see-through */
+        .prev:hover, .next:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+        .adminHomeAnniversaryMenberDiv{
+        min-width: 270px;
+        max-width: 270px;
+        height: 500px;
+        background-color: #f7f7f794;
+        border: 1px solid #d9d9d9;
+        box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+        padding: 15px;
+        }
+        #adminHomeAnniversaryHeading{
+        display: flex;
+        gap: 10px;
+        background-color: #FAD02C;
+        padding: 10px;
+        font-weight: 600;
+        }
+        #adminHomeAnniversaryHeading i{
+        font-size: 18px;
+        }
+        .divAdminHomeAnniversarymember{
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background-color: #d9d9d9;
+        padding:10px;
+        margin: 5px 0;
+        border-left: 2.5px solid #FAD02C;
+        }
+        .divAdminHomeAnniversarymember i{
+        font-size: 18px;
+        }
+        .adminHomeAnniversarymemberNameYear{
+        display: flex;
+        flex-direction: column;
+        }
+    </style>
+    <link rel="icon" type="image/png" href="../img/nLogo.png"/>
+    <title>Management Home</title>
+</head>
+<body oncontextmenu="return false">
+<div class="wrapper">
+    <%@ include file="../navbar/AdminSidebar.jsp" %>
+    <div id="content">
+        <%@ include file="../navbar/Navbar.jsp" %>
+        <section id="main-content">
+            <div class="adminHomeDetailsMainDiv">
+                <div class="adminHomeDetailsDiv employeeDetailDiv">
+                    <i class="fa-solid fa-users"></i>
+                    <div>Employee <p><%= GetDashboardDetails.getEmployeeDetails()%></p></div>
+                </div>
+                <div class="adminHomeDetailsDiv nominationDetailDiv">
+                    <i class="fa-solid fa-hashtag"></i>
+                    <div>Nomination<p><%= GetDashboardDetails.getNominationDetails()%></p></div>
+                </div>
+                <div class="adminHomeDetailsDiv performanceDetailDiv">
+                    <i class="fa-solid fa-hashtag"></i>
+                    <div>Performance<p><%= GetDashboardDetails.getPerformanceDetails() %></p></div>
+                </div>
+                <div class="adminHomeDetailsDiv anniversaryDetailDiv">
+                    <i class="fa fa-calendar" aria-hidden="true"></i>
+                    <div>Anniversary member <p><%= GetDashboardDetails.getAnniversaryDetails() %></p></div>
+                </div>
+            </div>
+            <div class="SliderAndAnniversaryMembersDiv">
+            <div class="adminHomeSlider">
+                <div class="slider-container">
+                    <div class="slide">
+                        <img src="../img/form.png" alt="Image 1">
+                        <div class="caption">Caption 1</div>
+                    </div>
+                    <div class="slide">
+                        <img src="../img/nomination.jpg" alt="Image 2">
+                        <div class="caption">Caption 2</div>
+                    </div>
+                    <div class="slide">
+                        <img src="../img/performance.jpg" alt="Image 3">
+                        <div class="caption">Caption 3</div>
+                    </div>
+                    <a class="prev" onclick="plusSlides(-1)">❮</a>
+                    <a class="next" onclick="plusSlides(1)">❯</a>
+                    <div class="dot-container">
+    <span class="dot" onclick="currentSlide(1)"></span>
+    <span class="dot" onclick="currentSlide(2)"></span>
+    <span class="dot" onclick="currentSlide(3)"></span>
+</div>
+                </div>
+                </div>
+                <div class="adminHomeAnniversaryMenberDiv">
+                    <div id="adminHomeAnniversaryHeading"><i class="fa-solid fa-cake-candles"></i> Anniversary members
+                    </div>
+                    <%
+                    Connection con = ConnectionProvider.getCon();
+                    Statement st = con.createStatement();
+                    ResultSet rs = st.executeQuery(
+                            "select EmployeeName as NAME, datediff(year,DOJ,getdate()) as Year_of_Exp from [VW_Active_Employees_NDS] where MONTH(DOJ) = MONTH(GETDATE()) and MailID is not null");
+                    while (rs.next()) {
+                    %>
+                    <div class="divAdminHomeAnniversarymember">
+                        <i class="fa-solid fa-user"></i>
+                        <div class="adminHomeAnniversarymemberNameYear">
+                            <span><%= rs.getString("NAME") %></span>
+                            <span><%= rs.getString("Year_of_Exp") %> years</span>
+                        </div>
+                    </div>
+                    <%
+                    }
+                    %>
+                </div>
+            </div>
+        </section>
+        <script>
+            let slideIndex = 1;
+            showSlides(slideIndex);
+
+            function plusSlides(n) {
+                showSlides((slideIndex += n));
+            }
+
+            function currentSlide(n) {
+                showSlides((slideIndex = n));
+            }
+
+            function showSlides(n) {
+                let i;
+                let slides = document.getElementsByClassName("slide");
+                let dots = document.getElementsByClassName("dot");
+                if (n > slides.length) {
+                    slideIndex = 1;
+                }
+                if (n < 1) {
+                    slideIndex = slides.length;
+                }
+                for (i = 0; i < slides.length; i++) {
+                    slides[i].style.display = "none";
+                }
+                for (i = 0; i < dots.length; i++) {
+                    dots[i].className = dots[i].className.replace(" active", "");
+                }
+                slides[slideIndex - 1].style.display = "block";
+                dots[slideIndex - 1].className += " active";
+            }
+
+            // Automatically transition slides
+            let slideInterval = setInterval(function () {
+                plusSlides(1);
+            }, 3000);
+        </script>
+    </div>
+</div>
+</body>
+</html>
