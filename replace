@@ -1,0 +1,91 @@
+package com.simplilearn.mavenproject;
+
+import java.util.Iterator;
+import java.util.Map;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+public class Testing {
+
+	 public static void main(String[] args) {
+	        ObjectMapper mapper = new ObjectMapper();
+	        String jsonString = "{\n" +
+	                "    \"name\": \"flow\",\n" +
+	                "    \"enteries\": [\n" +
+	                "        {\n" +
+	                "            \"username\": \"${application.username}\",\n" +
+	                "            \"host\": \"p(application.host)\",\n" +
+	                "            \"properties\": [\n" +
+	                "                {\n" +
+	                "                    \"password\": \"${application.password}\",\n" +
+	                "                    \"port\": \"application.p(port)\"\n" +
+	                "                }\n" +
+	                "            ]\n" +
+	                "        }\n" +
+	                "    ]\n" +
+	                "}";
+	        try {
+	            JsonNode rootNode = mapper.readTree(jsonString);
+	            replacePlaceholders(rootNode);
+	            System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(rootNode));
+	        } catch (JsonProcessingException e) {
+	            e.printStackTrace();
+	        }
+	        System.out.println("Completed");
+	    }
+
+	    private static void replacePlaceholders(JsonNode node) {
+	        if (node.isObject()) {
+	            ObjectNode objectNode = (ObjectNode) node;
+	            Iterator<Map.Entry<String, JsonNode>> fields = objectNode.fields();
+	            while (fields.hasNext()) {
+	                Map.Entry<String, JsonNode> field = fields.next();
+	                JsonNode valueNode = field.getValue();
+	                if (valueNode.isValueNode() && valueNode.isTextual()) {
+	                    String value = valueNode.asText();
+	                    String key = field.getKey();
+	                    if (value.startsWith("${") && value.endsWith("}")) {
+	                        String replaceVal = getPlaceholderValue(value);
+	                        objectNode.put(key, replaceVal);
+	                    } else if (value.startsWith("p(") && value.endsWith(")")) {
+	                        String replaceVal = getPValue(value);
+	                        objectNode.put(key, replaceVal);
+	                    }
+	                } else {
+	                    replacePlaceholders(valueNode);
+	                }
+	            }
+	        } else if (node.isArray()) {
+	            for (JsonNode arrayNode : node) {
+	                replacePlaceholders(arrayNode);
+	            }
+	        }
+	    }
+
+	    private static String getPlaceholderValue(String value) {
+	        String cleanDynamicPart = value.substring(2, value.length() - 1); // Remove "${" and "}"
+	        String[] parts = cleanDynamicPart.split("\\.");
+	        StringBuilder pathBuilder = new StringBuilder("lib.get('config').get('expression')");
+
+	        for (String part : parts) {
+	            pathBuilder.append(".get('").append(part).append("')");
+	        }
+
+	        return pathBuilder.toString();
+	    }
+
+	    private static String getPValue(String value) {
+	        String dynamicPart = value.substring(2, value.length() - 1); // Remove "p(" and ")"
+	        String[] parts = dynamicPart.split("\\.");
+	        StringBuilder pathBuilder = new StringBuilder("lib.get('config').get('expression')");
+
+	        for (String part : parts) {
+	            pathBuilder.append(".get('").append(part).append("')");
+	        }
+
+	        return pathBuilder.toString();
+	    }
+}
